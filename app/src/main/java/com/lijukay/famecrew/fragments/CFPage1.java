@@ -4,16 +4,15 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
+
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
@@ -26,7 +25,6 @@ import com.lijukay.famecrew.interfaces.OnClickInterface;
 import com.lijukay.famecrew.objects.Member;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -100,7 +98,7 @@ public class CFPage1 extends Fragment implements OnClickInterface {
 
     private void saveJsonAsFile(Context context, String jsonString) {
         try {
-            String destination = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString() + getString(R.string.app_name) + "-M.famecrew";
+            String destination = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString() + getString(R.string.app_name) + "-Members.famecrew";
             File file = new File(destination);
 
             FileOutputStream outputStream = new FileOutputStream(file);
@@ -108,7 +106,7 @@ public class CFPage1 extends Fragment implements OnClickInterface {
             outputStream.close();
 
             Toast.makeText(context, "File was saved successfully", Toast.LENGTH_SHORT).show();
-            context.getSharedPreferences("file_path_members", 0).edit().putString("file_path_members", file.getAbsolutePath()).apply();
+            context.getSharedPreferences("Members", 0).edit().putString("filePath", file.getAbsolutePath()).apply();
 
         } catch (IOException e) {
             throw new RuntimeException(e);

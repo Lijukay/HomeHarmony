@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -11,10 +12,10 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_margin="8dp"
-            android:id="@+id/exerciseNameTF"
+            android:id="@+id/ruleTitleTF"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Exercise name">
+            android:hint="Rule title">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
@@ -25,10 +26,10 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_margin="8dp"
-            android:id="@+id/memberTF"
+            android:id="@+id/ruleMessageTF"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Member's nickname"
+            android:hint="Rule"
             style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
 
             <com.google.android.material.textfield.TextInputEditText

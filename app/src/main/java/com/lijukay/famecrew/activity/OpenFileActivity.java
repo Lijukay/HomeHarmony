@@ -30,12 +30,15 @@ public class OpenFileActivity extends AppCompatActivity {
     private LottieAnimationView lottieAnimationView;
     private MaterialButton nextCreate, cancelChose;
     private MaterialToolbar materialToolbar;
+    private SharedPreferences membersPreference, firstStart;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        SharedPreferences firstStart = getSharedPreferences("firstStart", 0);
+        firstStart = getSharedPreferences("firstStart", 0);
+        membersPreference = getSharedPreferences("Members", 0);
+
         if (!firstStart.getBoolean("firstStart", true)){
             startActivity(new Intent(this, MainActivity.class));
         }
@@ -59,26 +62,13 @@ public class OpenFileActivity extends AppCompatActivity {
         lottieAnimationView.setVisibility(View.VISIBLE);
 
         nextCreate.setOnClickListener(v -> {
-            askForCreationType();
+            lottieAnimationView.setVisibility(View.GONE);
+            frameLayout.setVisibility(View.VISIBLE);
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragmentHolder, new CFPage1(nextCreate, cancelChose, materialToolbar)).commit();
+
         });
 
         cancelChose.setOnClickListener(v -> mGetContent.launch("application/json"));
-    }
-
-    private void askForCreationType() {
-        new MaterialAlertDialogBuilder(OpenFileActivity.this, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered)
-                .setTitle("Create File")
-                .setMessage("Where would you like to create your file? The file will include prename and nickname of members")
-                // TODO: 30.05.2023 Create a better explanation for what will happen
-                .setPositiveButton("In this app", (dialog, which) -> {
-                    lottieAnimationView.setVisibility(View.GONE);
-                    frameLayout.setVisibility(View.VISIBLE);
-                    getSupportFragmentManager().beginTransaction().replace(R.id.fragmentHolder, new CFPage1(nextCreate, cancelChose, materialToolbar)).commit();
-                })
-                .setNeutralButton("On Computer", (dialog, which) -> {
-                    // TODO: 30.05.2023 Either create website with explanation or an activity or a dialog
-                })
-                .show();
     }
 
     ActivityResultLauncher<String> mGetContent = registerForActivityResult(new ActivityResultContracts.GetContent(), result -> {
@@ -95,9 +85,9 @@ public class OpenFileActivity extends AppCompatActivity {
                     fileOutputStream.write(buffer, 0, length);
                 }
                 fileOutputStream.close();
-                getSharedPreferences("file_path_members", 0).edit().putString("file_path_members", outputFile.getAbsolutePath()).apply();
+                membersPreference.edit().putString("filePath", outputFile.getAbsolutePath()).apply();
 
-                getSharedPreferences("firstStart", 0).edit().putBoolean("firstStart", false).apply();
+                firstStart.edit().putBoolean("firstStart", false).apply();
 
                 startActivity(new Intent(OpenFileActivity.this, MainActivity.class));
             } else {
@@ -117,7 +107,7 @@ public class OpenFileActivity extends AppCompatActivity {
     });
 
     private File createOutputFile() {
-        String destination = getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString() + getString(R.string.app_name) + "-M.json";
+        String destination = getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString() + getString(R.string.app_name) + "-Members.json";
         return new File(destination);
     }
 }

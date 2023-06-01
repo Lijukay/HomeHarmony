@@ -1,5 +1,6 @@
 package com.lijukay.famecrew.fragments;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -44,15 +45,17 @@ public class MemberOverview extends Fragment implements OnClickInterface {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_member_overview, container, false);
 
+        SharedPreferences exercisesPreference = requireContext().getSharedPreferences("Exercises", 0);
+
         materialToolbar.setTitle(name);
         RecyclerView rv = v.findViewById(R.id.memberExercises);
         rv.setLayoutManager(new LinearLayoutManager(requireContext().getApplicationContext()));
 
-        if (requireContext().getSharedPreferences("file_path_ex", 0).getString("file_path_ex", null) != null) {
-            getFileContent(new File(requireContext().getSharedPreferences("file_path_ex", 0).getString("file_path_ex", null)));
+        if (exercisesPreference.getString("filePath", null) != null) {
+            getFileContent(new File(exercisesPreference.getString("filePath", null)));
 
             if (exercises.size() == 0) {
-                exercises.add(new Exercise(name, new Member("No Exercise", "")));
+                exercises.add(new Exercise("No exercises", new Member("", "")));
             }
 
             ExerciseAdapter exerciseAdapter = new ExerciseAdapter(requireContext(), exercises, this);
