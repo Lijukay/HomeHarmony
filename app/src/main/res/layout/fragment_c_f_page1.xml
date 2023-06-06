@@ -21,7 +21,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 style="@style/Widget.Material3.TextInputEditText.OutlinedBox"
-                android:hint="Member's prename"
+                android:hint="@string/member_s_prename"
                 android:id="@+id/memberPrename">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -34,7 +34,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 style="@style/Widget.Material3.TextInputEditText.OutlinedBox"
-                android:hint="Member's nickname"
+                android:hint="@string/member_s_nickname"
                 android:id="@+id/memberNickname"
                 android:layout_below="@id/memberPrename">
 
@@ -55,7 +55,7 @@
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="16dp"
-                android:text="Add" />
+                android:text="@string/add" />
 
         </RelativeLayout>
     </com.google.android.material.card.MaterialCardView>

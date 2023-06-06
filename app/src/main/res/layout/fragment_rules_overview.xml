@@ -16,7 +16,7 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         android:layout_margin="24dp"
-        android:text="Add rule"
+        android:text="@string/add_rule"
         android:id="@+id/addRule"/>
 
 </RelativeLayout>

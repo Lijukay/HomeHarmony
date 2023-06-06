@@ -12,12 +12,12 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         android:layout_margin="24dp"
-        android:text="Add new exercise"/>
+        android:text="@string/add_new_exercise"/>
 
 
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/exercisesRV"/>
+        android:id="@+id/exercisesRV" />
 
 </RelativeLayout>

@@ -64,7 +64,11 @@ public class CFPage1 extends Fragment implements OnClickInterface {
         membersList.setLayoutManager(new LinearLayoutManager(requireContext().getApplicationContext()));
 
         members = new ArrayList<>();
+
+
         membersAdapter = new MembersAdapter(requireContext(), members, this);
+
+        next.setEnabled(isEnableAllowed());
 
         membersList.setAdapter(membersAdapter);
 
@@ -73,19 +77,23 @@ public class CFPage1 extends Fragment implements OnClickInterface {
             String nickname = Objects.requireNonNull(nicknameInput.getEditText()).getText().toString();
 
             addToArrayAndRefresh(prename, nickname);
+            next.setEnabled(isEnableAllowed());
         });
 
-        cancel.setText("Cancel");
+        cancel.setText(getString(R.string.cancel));
 
-        next.setText("Next");
+        next.setText(getString(R.string.next));
         next.setOnClickListener(v12 -> {
             addMembersToFile();
-            // TODO: 30.05.2023 Add end fragment and replace fragmentHolder with it
             startActivity(new Intent(requireContext(), MainActivity.class));
             requireContext().getSharedPreferences("firstStart", 0).edit().putBoolean("firstStart", false).apply();
         });
 
         return v;
+    }
+
+    private boolean isEnableAllowed() {
+        return membersAdapter.getItemCount() != 0;
     }
 
     private void addMembersToFile() {
@@ -98,14 +106,13 @@ public class CFPage1 extends Fragment implements OnClickInterface {
 
     private void saveJsonAsFile(Context context, String jsonString) {
         try {
-            String destination = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString() + getString(R.string.app_name) + "-Members.famecrew";
+            String destination = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString() + "/" + getString(R.string.app_name) + ".hhm";
             File file = new File(destination);
 
             FileOutputStream outputStream = new FileOutputStream(file);
             outputStream.write(jsonString.getBytes());
             outputStream.close();
 
-            Toast.makeText(context, "File was saved successfully", Toast.LENGTH_SHORT).show();
             context.getSharedPreferences("Members", 0).edit().putString("filePath", file.getAbsolutePath()).apply();
 
         } catch (IOException e) {

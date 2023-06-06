@@ -1,9 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:showIn="navigation_view">
+    xmlns:tools="http://schemas.android.com/tools">
 
+    <item
+        android:id="@+id/home"
+        android:enabled="true"
+        android:title="Home"
+        android:icon="@drawable/home_icon"/>
+    <item
+        android:id="@+id/members"
+        android:enabled="true"
+        android:title="Members"
+        android:icon="@drawable/member_icon"/>
+    <item
+        android:id="@+id/exercises"
+        android:enabled="true"
+        android:title="Exercises"
+        android:icon="@drawable/exercises_icon"/>
+    <item
+        android:id="@+id/rules"
+        android:enabled="true"
+        android:title="Rules"
+        android:icon="@drawable/rulebook_icon"/>
 
 
 </menu>

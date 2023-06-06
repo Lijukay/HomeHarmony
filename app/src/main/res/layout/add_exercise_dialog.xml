@@ -14,7 +14,7 @@
             android:id="@+id/exerciseNameTF"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Exercise name">
+            android:hint="@string/exercise_name">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
@@ -28,7 +28,7 @@
             android:id="@+id/memberTF"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Member's nickname"
+            android:hint="@string/member_s_nickname"
             style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
 
             <com.google.android.material.textfield.TextInputEditText

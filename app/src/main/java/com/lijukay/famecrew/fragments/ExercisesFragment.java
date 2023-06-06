@@ -8,18 +8,13 @@ import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.textfield.TextInputLayout;
@@ -43,17 +38,13 @@ import java.util.Objects;
 public class ExercisesFragment extends Fragment {
 
     ExtendedFloatingActionButton efab;
-    String type;
-    MaterialToolbar title;
     RecyclerView recyclerView;
     ExerciseAdapter exerciseAdapter;
     ArrayList<Exercise> exercises;
     ArrayList<Member> members;
     SharedPreferences exercisesPreference, membersPreference;
 
-    public ExercisesFragment(String type, MaterialToolbar title) {
-        this.type = type;
-        this.title = title;
+    public ExercisesFragment() {
     }
 
     @Override
@@ -73,86 +64,51 @@ public class ExercisesFragment extends Fragment {
 
         if (exercisesPreference.getString("filePath", null) != null) {
             getFileContent(new File(exercisesPreference.getString("filePath", null)));
+        } else if (exercisesPreference.getBoolean("firstStart", true)) {
+            new MaterialAlertDialogBuilder(requireContext(), com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered)
+                    .setTitle(getString(R.string.first_start_dialog_title_exercises))
+                    .setMessage(getString(R.string.first_start_dialog_message_exercises))
+                    .setPositiveButton(getString(R.string.okay), (dialog, which) -> {
+                        dialog.cancel();
+                    })
+                    .setOnCancelListener(dialog -> exercisesPreference.edit().putBoolean("firstStart", false).apply())
+                    .show();
+        } else if (exercisesPreference.getBoolean("shouldExist", false)) {
+            new MaterialAlertDialogBuilder(requireContext(), com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered)
+                    .setTitle(getString(R.string.file_not_found_title))
+                    .setMessage(getString(R.string.file_not_found_exercise))
+                    .setPositiveButton(getString(R.string.okay), (dialog, which) -> dialog.cancel())
+                    .show();
         }
 
         exerciseAdapter = new ExerciseAdapter(requireContext(), exercises, null);
         recyclerView.setAdapter(exerciseAdapter);
 
-        if (type.equals("unsorted")){
-            title.setTitle("Unsorted Exercises");
-            efab.setOnClickListener(v12 ->
-                    new MaterialAlertDialogBuilder(requireContext(), com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered)
-                    .setTitle("Exercises")
-                    .setMessage("You can create a new file yourself by clicking on \"Add exercise\" and open a file, that includes exercises, by clicking on \"From File\"")
-                    .setPositiveButton("Add exercise", (dialog, which) -> addNewUnsortedExercise())
-                    .setNeutralButton("From file", (dialog, which) -> mGetContent.launch("application/octet-stream"))
-                    .show());
 
-        } else if (type.equals("all")){
-            title.setTitle("All exercises");
+
             efab.setOnClickListener(v1 ->
                     new MaterialAlertDialogBuilder(requireContext(), com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered)
-                    .setTitle("Exercises")
-                    .setMessage("You can create a new file yourself by clicking on \"Add exercise\" and open a file, that includes exercises, by clicking on \"From File\"")
-                    .setPositiveButton("Add exercise", (dialog, which) -> addNewExercise())
-                    .setNeutralButton("From file", (dialog, which) -> mGetContent.launch("application/octet-stream"))
+                    .setTitle(getString(R.string.exercises_dialog_title))
+                    .setMessage(getString(R.string.exercises_dialog_message))
+                    .setPositiveButton(getString(R.string.add_exercise), (dialog, which) -> addNewExercise())
+                    .setNeutralButton(getString(R.string.from_file), (dialog, which) -> mGetContent.launch("application/octet-stream"))
                     .show());
-        }
 
-        ViewCompat.setOnApplyWindowInsetsListener(efab, (v1, windowInsets) -> {
-            Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
-            // Apply the insets as a margin to the view. Here the system is setting
-            // only the bottom, left, and right dimensions, but apply whichever insets are
-            // appropriate to your layout. You can also update the view padding
-            // if that's more appropriate.
-            ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) efab.getLayoutParams();
-            ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) v1.getLayoutParams();
-            mlp.bottomMargin = insets.bottom + lp.bottomMargin;
-            v1.setLayoutParams(mlp);
-
-            // Return CONSUMED if you don't want want the window insets to keep being
-            // passed down to descendant views.
-            return WindowInsetsCompat.CONSUMED;
-        });
-
-        return v;
-    }
-
-    @SuppressLint("NotifyDataSetChanged")
-    private void addNewUnsortedExercise() {
-        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(requireContext(), com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered);
-
-        builder.setTitle("New Exercise");
-
-        View viewInflated = LayoutInflater.from(getContext()).inflate(R.layout.add_exercise_dialog, (ViewGroup) getView(), false);
-        TextInputLayout exerciseName = viewInflated.findViewById(R.id.exerciseNameTF);
-        TextInputLayout member = viewInflated.findViewById(R.id.memberTF);
-        builder.setView(viewInflated);
-        member.setEnabled(false);
-        member.setVisibility(View.GONE);
-
-        builder.setPositiveButton("Add", (dialog, which) -> {
-            if (!Objects.requireNonNull(exerciseName.getEditText()).getText().toString().trim().equals("")) {
-                exercises.add(new Exercise(exerciseName.getEditText().getText().toString().trim(), new Member("", "")));
-                exerciseAdapter.notifyDataSetChanged();
-                addExercisesToFile();
-            }
-        });
-        builder.show();
+            return v;
     }
 
     @SuppressLint("NotifyDataSetChanged")
     private void addNewExercise() {
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(requireContext(), com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered);
 
-        builder.setTitle("New Exercise");
+        builder.setTitle(getString(R.string.new_exercise_title));
 
         View viewInflated = LayoutInflater.from(getContext()).inflate(R.layout.add_exercise_dialog, (ViewGroup) getView(), false);
         TextInputLayout exerciseName = viewInflated.findViewById(R.id.exerciseNameTF);
         TextInputLayout member = viewInflated.findViewById(R.id.memberTF);
         builder.setView(viewInflated);
 
-        builder.setPositiveButton("Add", (dialog, which) -> {
+        builder.setPositiveButton(getString(R.string.add), (dialog, which) -> {
             if (!Objects.requireNonNull(exerciseName.getEditText()).getText().toString().trim().equals("")) {
                 if (Objects.requireNonNull(member.getEditText()).getText().toString().trim().equals("")) {
                     exercises.add(new Exercise(exerciseName.getEditText().getText().toString().trim(), new Member("", "")));
@@ -218,16 +174,8 @@ public class ExercisesFragment extends Fragment {
         String jsonString = fileContent.toString();
         Type exerciseType = new TypeToken<ArrayList<Exercise>>(){}.getType();
 
-        if (type.equals("all")){
-            exercises = gson.fromJson(jsonString, exerciseType);
-        } else {
-            ArrayList<Exercise> exercises1 = gson.fromJson(jsonString, exerciseType);
-            for(int i = 0; i < exercises1.size(); i++) {
-                if (exercises1.get(i).getMember().getPrename().equals("") && exercises1.get(i).getMember().getPrename().equals("")) {
-                    exercises.add(exercises1.get(i));
-                }
-            }
-        }
+
+        exercises = gson.fromJson(jsonString, exerciseType);
     }
 
     private void addExercisesToFile() {
@@ -240,14 +188,13 @@ public class ExercisesFragment extends Fragment {
 
     private void saveJsonAsFile(Context context, String jsonString) {
         try {
-            String destination = context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS).toString() + getString(R.string.app_name) + "-Exercises.famecrew";
+            String destination = context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS).toString() + "/" + getString(R.string.app_name) + ".hhe";
             File file = new File(destination);
 
             FileOutputStream outputStream = new FileOutputStream(file);
             outputStream.write(jsonString.getBytes());
             outputStream.close();
 
-            Toast.makeText(context, "File was saved successfully", Toast.LENGTH_SHORT).show();
             exercisesPreference.edit().putString("filePath", file.getAbsolutePath()).apply();
 
         } catch (IOException e) {
@@ -256,7 +203,7 @@ public class ExercisesFragment extends Fragment {
     }
 
     ActivityResultLauncher<String> mGetContent = registerForActivityResult(new ActivityResultContracts.GetContent(), result -> {
-        if (result != null && result.toString().endsWith("-Exercises.famecrew")) {
+        if (result != null && getFileExtension(result.toString()).equals("hhe")) {
             try {
                 InputStream inputStream = requireContext().getContentResolver().openInputStream(result);
                 File outputFile = createOutputFile();
@@ -294,9 +241,9 @@ public class ExercisesFragment extends Fragment {
                     addExercisesToFile();
                 } else {
                     new MaterialAlertDialogBuilder(requireContext(), com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered)
-                            .setTitle("Unable to read file")
-                            .setMessage("There was an error while reading the file. Try again")
-                            .setPositiveButton("Okay", (dialog, which) -> dialog.cancel())
+                            .setTitle(getString(R.string.read_file_dialog_error_title))
+                            .setMessage(getString(R.string.read_file_dialog_error_message))
+                            .setPositiveButton(getString(R.string.okay), (dialog, which) -> dialog.cancel())
                             .show();
                 }
 
@@ -307,25 +254,19 @@ public class ExercisesFragment extends Fragment {
                 throw new RuntimeException(e);
             }
         } else if (result != null) {
-            if (!getFileExtension(result.toString()).equals("famecrew")) {
+            if (getFileExtension(result.toString()).equals("hhr") || getFileExtension(result.toString()).equals("hhm")) {
                 new MaterialAlertDialogBuilder(requireContext(), com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered)
-                        .setTitle("File type not supported")
-                        .setMessage("Please make sure, you are using a file, where the extension is famecrew. The application is not able to read other files than that.")
-                        .setPositiveButton("Okay", (dialog, which) -> dialog.cancel())
+                        .setTitle(getString(R.string.read_file_extension_not_valid_title))
+                        .setMessage(getString(R.string.read_file_extension_not_valid_message_exercises))
+                        .setPositiveButton(getString(R.string.okay), (dialog, which) -> dialog.cancel())
                         .show();
-            } else if (!result.toString().endsWith("-Exercises.famecrew")) {
+            } else if (!result.toString().endsWith("hhr") && !result.toString().endsWith("hhe") && !result.toString().endsWith("hhm")) {
                 new MaterialAlertDialogBuilder(requireContext(), com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered)
-                        .setTitle("Almost")
-                        .setMessage("Please make sure, your file ends with \"-Exercises.famecrew\".")
-                        .setPositiveButton("Okay", (dialog, which) -> dialog.cancel())
+                        .setTitle(getString(R.string.read_file_extension_not_supported_title))
+                        .setMessage(getString(R.string.read_file_extension_not_supported_message_exercises))
+                        .setPositiveButton(getString(R.string.okay), (dialog, which) -> dialog.cancel())
                         .show();
             }
-        } else {
-            new MaterialAlertDialogBuilder(requireContext(), com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered)
-                    .setTitle("Oh no!")
-                    .setMessage("This was unexpected. Try again.")
-                    .setPositiveButton("Okay", (dialog, which) -> dialog.cancel())
-                    .show();
         }
     });
     private String getFileExtension(String filePath) {
@@ -338,8 +279,7 @@ public class ExercisesFragment extends Fragment {
         return "";
     }
     private File createOutputFile() {
-        String destination = requireContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString() + getString(R.string.app_name) + "-Exercises.famecrew";
+        String destination = requireContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString() + "/" + getString(R.string.app_name) + ".hhe";
         return new File(destination);
     }
-
 }

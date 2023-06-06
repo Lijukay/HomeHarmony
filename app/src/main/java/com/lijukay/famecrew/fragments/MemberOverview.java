@@ -1,22 +1,22 @@
 package com.lijukay.famecrew.fragments;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.lijukay.famecrew.R;
-import com.lijukay.famecrew.adapter.ExerciseAdapter;
+import com.lijukay.famecrew.adapter.MembersAdapter;
 import com.lijukay.famecrew.interfaces.OnClickInterface;
 import com.lijukay.famecrew.objects.Exercise;
 import com.lijukay.famecrew.objects.Member;
@@ -30,12 +30,10 @@ import java.util.ArrayList;
 
 public class MemberOverview extends Fragment implements OnClickInterface {
 
-    private final String name;
     private final MaterialToolbar materialToolbar;
-    private ArrayList<Exercise> exercises;
+    private ArrayList<Member> members;
 
-    public MemberOverview(String name, MaterialToolbar materialToolbar) {
-        this.name = name;
+    public MemberOverview(MaterialToolbar materialToolbar) {
         this.materialToolbar = materialToolbar;
     }
 
@@ -45,29 +43,38 @@ public class MemberOverview extends Fragment implements OnClickInterface {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_member_overview, container, false);
 
-        SharedPreferences exercisesPreference = requireContext().getSharedPreferences("Exercises", 0);
+        Context context = requireContext();
 
-        materialToolbar.setTitle(name);
+        SharedPreferences membersPreference = context.getSharedPreferences("Members", 0);
+        boolean firstStart = membersPreference.getBoolean("firstStart", true);
+        String filePath = membersPreference.getString("filePath", null);
+
+        materialToolbar.setTitle(getString(R.string.members));
         RecyclerView rv = v.findViewById(R.id.memberExercises);
-        rv.setLayoutManager(new LinearLayoutManager(requireContext().getApplicationContext()));
 
-        if (exercisesPreference.getString("filePath", null) != null) {
-            getFileContent(new File(exercisesPreference.getString("filePath", null)));
+        rv.setLayoutManager(new LinearLayoutManager(context.getApplicationContext()));
 
-            if (exercises.size() == 0) {
-                exercises.add(new Exercise("No exercises", new Member("", "")));
+        members = new ArrayList<>();
+
+        if (filePath != null) {
+            getFileContent(new File(membersPreference.getString("filePath", null)));
+            if (members.size() == 0) {
+                members.add(new Member(getString(R.string.no_member), getString(R.string.no_member)));
             }
-
-            ExerciseAdapter exerciseAdapter = new ExerciseAdapter(requireContext(), exercises, this);
-            rv.setAdapter(exerciseAdapter);
-        } else {
-            new MaterialAlertDialogBuilder(requireContext(), com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered)
-                    .setTitle("No file")
-                    .setMessage("The file, that contains exercises has not been found. Please go to Exercises overview and create a new file or click on choose file")
-                    .setPositiveButton("Okay", (dialog, which) -> dialog.cancel())
+        } else if (firstStart){
+            new MaterialAlertDialogBuilder(context, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered)
+                    .setTitle(getString(R.string.first_start_dialog_title_members))
+                    .setMessage(getString(R.string.first_start_dialog_message_members))
+                    .setPositiveButton(getString(R.string.okay), (dialog, which) -> dialog.cancel())
+                    .setOnCancelListener(dialog -> membersPreference.edit().putBoolean("firstStart", false).apply())
                     .show();
+            members.add(new Member(getString(R.string.no_member), getString(R.string.no_member)));
+        } else {
+            members.add(new Member(getString(R.string.no_member), getString(R.string.no_member)));
         }
 
+        MembersAdapter membersAdapter = new MembersAdapter(context, members, this);
+        rv.setAdapter(membersAdapter);
 
         return v;
     }
@@ -86,24 +93,17 @@ public class MemberOverview extends Fragment implements OnClickInterface {
             e.printStackTrace();
         }
 
-        getExercise(fileContent);
-    }
-
-    private void getExercise(StringBuilder fileContent) {
-        exercises = new ArrayList<>();
-        String jsonString = fileContent.toString();
+        members = new ArrayList<>();
         Gson gson = new Gson();
+        String jsonString = fileContent.toString();
+        Type exerciseType = new TypeToken<ArrayList<Member>>(){}.getType();
 
-        Type exerciseType = new TypeToken<ArrayList<Exercise>>(){}.getType();
+        members = gson.fromJson(jsonString, exerciseType);
 
-        ArrayList<Exercise> exercises1 = gson.fromJson(jsonString, exerciseType);
-
-        for (int i = 0; i < exercises1.size(); i++) {
-            if ((exercises1.get(i).getMember().getPrename() + " (" + exercises1.get(i).getMember().getNickname() + ")").equals(name)) {
-                exercises.add(exercises1.get(i));
-            }
-        }
+        // TODO: 04.06.2023 Add possibility to add members 
     }
+
+
 
     @Override
     public void onItemClick(int position) {
