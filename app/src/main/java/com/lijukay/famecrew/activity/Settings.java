@@ -12,8 +12,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
+import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.FileProvider;
 import androidx.core.view.WindowCompat;
 import androidx.preference.Preference;
@@ -25,6 +27,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.elevation.SurfaceColors;
 import com.lijukay.famecrew.BuildConfig;
@@ -56,6 +59,14 @@ public class Settings extends AppCompatActivity {
         AppBarLayout appBarLayout = findViewById(R.id.topAppBar);
         int color = SurfaceColors.SURFACE_2.getColor(this);
 
+        MaterialToolbar materialToolbar = findViewById(R.id.titleBar);
+
+        materialToolbar.setNavigationIcon(AppCompatResources.getDrawable(this, R.drawable.back_icon));
+
+        setSupportActionBar(materialToolbar);
+
+        materialToolbar.setNavigationOnClickListener(v -> onBackPressed());
+
         appBarLayout.setBackgroundColor(color);
     }
 
@@ -86,6 +97,8 @@ public class Settings extends AppCompatActivity {
 
             if (connected) {
                 parseJSONVersion();
+            } else {
+                updater.setSummary(getString(R.string.no_connection));
             }
 
             updater.setOnPreferenceClickListener(preference -> {

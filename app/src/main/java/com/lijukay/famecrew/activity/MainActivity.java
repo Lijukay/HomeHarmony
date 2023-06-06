@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.OptIn;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.FileProvider;
@@ -19,6 +20,9 @@ import androidx.core.view.WindowCompat;
 
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.badge.BadgeDrawable;
+import com.google.android.material.badge.BadgeUtils;
+import com.google.android.material.badge.ExperimentalBadgeUtils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.elevation.SurfaceColors;
@@ -51,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
     private SharedPreferences membersPreference, exercisesPreference, rulesPreference;
     private BottomNavigationView navigationBar;
     private MenuItem homeItem, membersItem, exercisesItem, rulesItem;
+    private MaterialToolbar materialToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
 
         appBarLayout.setBackgroundColor(color);
 
-        MaterialToolbar materialToolbar = findViewById(R.id.titleBar);
+        materialToolbar = findViewById(R.id.titleBar);
 
         setSupportActionBar(materialToolbar);
 
@@ -84,6 +89,7 @@ public class MainActivity extends AppCompatActivity {
         getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, new HomeFragment()).commit();
 
         selectedItem();
+
 
         navigationBar.setOnItemSelectedListener(item -> {
             if (item.getItemId() == R.id.home) {
