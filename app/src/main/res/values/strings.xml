@@ -3,15 +3,15 @@
     <string name="beta_info_title">Information to the app-version</string>
     <string name="beta_info_message">This app-version is not a full release. This is a beta version so it could be unstable and things can lead this app to crash. Report issues if possible.\nThank you for testing this application!</string>
     <string name="daily_exercise_home_title">Exercises, you need to finish today</string>
-    <string name="no_user_selected">Please select a user in Settings first, to use this feature.</string>
+    <string name="no_user_selected_warning">Please select a user in Settings first, to use this feature.</string>
     <string name="daily_progress_title">Your progress today</string>
     <string name="share_files_dialog_title">Share files</string>
-    <string name="share_files_dialog_positive_button">Share</string>
+    <string name="share">Share</string>
     <string name="read_file_dialog_error_title">Unable to read file</string>
     <string name="read_file_dialog_error_message">There was an error while reading the file. Try again.</string>
     <string name="okay" translatable="false">Okay</string>
-    <string name="read_file_extension_not_valid_title">File extension not valid</string>
-    <string name="read_file_extension_not_valid_message_members">This is a Home Harmony-file extension but it is not the correct extension for the members. Please use a file, which extension is .hhm.</string>
+    <string name="read_file_extension_not_right_title">File extension not right</string>
+    <string name="read_file_extension_not_right_message_members">This is a Home Harmony-file extension but it is not the correct extension for the members. Please use a file, which extension is .hhm.</string>
     <string name="read_file_extension_not_supported_title">File extension not supported</string>
     <string name="read_file_extension_not_supported_message_members">This is not a Home Harmony file. Please select a file, which extension is .hhm.</string>
     <string name="unexpected_error_title">Oh no!</string>
@@ -21,7 +21,7 @@
     <string name="exercises_dialog_title">Exercises</string>
     <string name="exercises_dialog_message">You can create a new file yourself by clicking on \"Add exercise\" and open a file, that includes exercises, by clicking on \"From File\".</string>
     <string name="add_exercise">Add exercise</string>
-    <string name="from_file">From file</string>
+    <string name="choos_file">From file</string>
     <string name="new_exercise_title">New exercise</string>
     <string name="add">Add</string>
     <string name="read_file_extension_not_valid_message_exercises">This is a Home Harmony-file extension but it is not the correct extension for exercises. Please use a file, which extension is .hhe.</string>
@@ -65,4 +65,13 @@
     <string name="update_available">Update available</string>
     <string name="later">Later</string>
     <string name="no_connection">Can\'t check for updates</string>
+    <string name="home">Home</string>
+    <string name="exercises">Exercises</string>
+    <string name="rules">Rules</string>
+    <string name="createFileOrChoose">Choose file or create new"</string>
+    <string name="copy_logs">Copy logs</string>
+    <string name="send_logs">Send logs</string>
+    <string name="errorMessage">There was an error with this application:\n\n%1$s</string>
+    <string name="copied">Logs have been copied to the clipboard</string>
+    <string name="error_nickname">Nickname has to be unique</string>
 </resources>

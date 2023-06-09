@@ -4,14 +4,14 @@
     <string name="beta_info_title">Information zur App-Version</string>
     <string name="beta_info_message">Diese App-Version ist keine vollständige Veröffentlichung. Die Beta-Version kann instabil sein und Dinge können dazu führen, dass die App abstürzt. Wenn möglich, melde  die Probleme.\nDanke für\'s Austesten der App!</string>
     <string name="daily_exercise_home_title">Aufgaben, die du heute noch machen musst</string>
-    <string name="no_user_selected">Bitte wähle zuerst einen Nutzer in den Einstellungen.</string>
+    <string name="no_user_selected_warning">Bitte wähle zuerst einen Nutzer in den Einstellungen.</string>
     <string name="daily_progress_title">Dein Fortschritt heute</string>
     <string name="share_files_dialog_title">Dateien senden</string>
-    <string name="share_files_dialog_positive_button">Senden</string>
+    <string name="share">Senden</string>
     <string name="read_file_dialog_error_title">Nicht möglich, die Datei zu lesen</string>
     <string name="read_file_dialog_error_message">Es gab einen Fehler während des Lesens der Datei. Versuche es noch einmal.</string>
-    <string name="read_file_extension_not_valid_title">Dateierweiterung nicht gültig</string>
-    <string name="read_file_extension_not_valid_message_members">Das ist eine Home Harmony Dateierweiterung, aber leider nicht die richtige Erweiterung für Mitglieder. Bitte nutze eine Datei, dessen Erweiterung .hhm ist.</string>
+    <string name="read_file_extension_not_right_title">Dateierweiterung nicht richtig</string>
+    <string name="read_file_extension_not_right_message_members">Das ist eine Home Harmony Dateierweiterung, aber leider nicht die richtige Erweiterung für Mitglieder. Bitte nutze eine Datei, dessen Erweiterung .hhm ist.</string>
     <string name="read_file_extension_not_supported_title">Datererweiterung nicht unterstützt</string>
     <string name="read_file_extension_not_supported_message_members">Das ist keine Home Harmony Datei. Bitte wähle eine Datei, dessen Erweiterung .hmm ist.</string>
     <string name="unexpected_error_title">Oh nein!</string>
@@ -21,7 +21,7 @@
     <string name="exercises_dialog_title">Aufgaben</string>
     <string name="exercises_dialog_message">Du kannst eine eigene Datei selbst erstellen, wenn du auf \"Aufgabe hinzufügen\" klickst und eine Datei öffnen, die Aufgaben beinhaltet, wenn du auf \"Datei auswählen\" klickst.</string>
     <string name="add_exercise">Aufgabe hinzufügen</string>
-    <string name="from_file">Datei auswählen</string>
+    <string name="choos_file">Datei auswählen</string>
     <string name="new_exercise_title">Neue Aufgabe</string>
     <string name="add">Hinzufügen</string>
     <string name="read_file_extension_not_valid_message_exercises">Das ist eine Home Harmony Dateierweiterung, aber leider nicht die richtige Erweiterung für Aufgaben. Bitte nutze eine Datei, dessen Erweiterung .hhe ist.</string>
@@ -64,4 +64,12 @@
     <string name="update_available">Update verfügbar</string>
     <string name="later">Später</string>
     <string name="no_connection">Es kann nicht nach Updates gesucht werden</string>
+    <string name="home">Home</string>
+    <string name="exercises">Aufgaben</string>
+    <string name="rules">Regeln</string>
+    <string name="createFileOrChoose">Datei wählen oder erstellen</string>
+    <string name="copy_logs">Logs kopieren</string>
+    <string name="send_logs">Logs senden</string>
+    <string name="errorMessage">Es gab einen Fehler mit der App:\n\n%1$s</string>
+    <string name="copied">Logs wurden in das Zwischenspeicher kopiert</string>
 </resources>
