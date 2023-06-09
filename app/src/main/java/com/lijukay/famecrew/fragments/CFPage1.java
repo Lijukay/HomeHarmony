@@ -10,16 +10,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.gson.Gson;
 import com.lijukay.famecrew.R;
 import com.lijukay.famecrew.activity.MainActivity;
+import com.lijukay.famecrew.activity.OpenFileActivity;
 import com.lijukay.famecrew.adapter.MembersAdapter;
 import com.lijukay.famecrew.interfaces.OnClickInterface;
 import com.lijukay.famecrew.objects.Member;
@@ -33,18 +34,32 @@ import java.util.Objects;
 
 public class CFPage1 extends Fragment implements OnClickInterface {
 
-    private final MaterialButton next;
-    private final MaterialButton cancel;
-    private final MaterialToolbar title;
+    private int nextButtonID;
+    private int cancelButtonID;
     private ArrayList<Member> members;
     private MembersAdapter membersAdapter;
     private TextInputLayout prenameInput;
     private TextInputLayout nicknameInput;
 
-    public CFPage1(MaterialButton next, MaterialButton cancel, MaterialToolbar title) {
-        this.next = next;
-        this.cancel = cancel;
-        this.title = title;
+    public CFPage1() {
+    }
+
+    public static CFPage1 newInstance (int nextButtonID, int cancelButtonID) {
+        CFPage1 fragment = new CFPage1();
+        Bundle args = new Bundle();
+        args.putInt("nextButtonID", nextButtonID);
+        args.putInt("cancelButtonID", cancelButtonID);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            nextButtonID = getArguments().getInt("nextButtonID");
+            cancelButtonID = getArguments().getInt("cancelButtonID");
+        }
     }
 
     @SuppressLint("SetTextI18n")
@@ -59,7 +74,8 @@ public class CFPage1 extends Fragment implements OnClickInterface {
         prenameInput = v.findViewById(R.id.memberPrename);
         nicknameInput = v.findViewById(R.id.memberNickname);
 
-        title.setTitle("Members");
+        MaterialButton next = requireActivity().findViewById(nextButtonID);
+        MaterialButton cancel = requireActivity().findViewById(cancelButtonID);
 
         membersList.setLayoutManager(new LinearLayoutManager(requireContext().getApplicationContext()));
 
@@ -68,7 +84,9 @@ public class CFPage1 extends Fragment implements OnClickInterface {
 
         membersAdapter = new MembersAdapter(requireContext(), members, this);
 
-        next.setEnabled(isEnableAllowed());
+        if (next != null) {
+            next.setEnabled(isEnableAllowed());
+        }
 
         membersList.setAdapter(membersAdapter);
 
@@ -77,17 +95,26 @@ public class CFPage1 extends Fragment implements OnClickInterface {
             String nickname = Objects.requireNonNull(nicknameInput.getEditText()).getText().toString();
 
             addToArrayAndRefresh(prename, nickname);
-            next.setEnabled(isEnableAllowed());
+            if (next != null) {
+                next.setEnabled(isEnableAllowed());
+            }
         });
 
-        cancel.setText(getString(R.string.cancel));
+        if(cancel != null) {
+            requireActivity().finish();
+            cancel.setText(getString(R.string.cancel));
+            cancel.setOnClickListener(v13 -> startActivity(new Intent(requireContext(), OpenFileActivity.class)));
+        }
 
-        next.setText(getString(R.string.next));
-        next.setOnClickListener(v12 -> {
-            addMembersToFile();
-            startActivity(new Intent(requireContext(), MainActivity.class));
-            requireContext().getSharedPreferences("firstStart", 0).edit().putBoolean("firstStart", false).apply();
-        });
+        if (next != null) {
+            next.setText(getString(R.string.next));
+            next.setOnClickListener(v12 -> {
+                addMembersToFile();
+                startActivity(new Intent(requireContext(), MainActivity.class));
+                requireActivity().finish();
+                requireContext().getSharedPreferences("firstStart", 0).edit().putBoolean("firstStart", false).apply();
+            });
+        }
 
         return v;
     }
@@ -122,8 +149,21 @@ public class CFPage1 extends Fragment implements OnClickInterface {
 
     @SuppressLint("NotifyDataSetChanged")
     public void addToArrayAndRefresh(String prename, String nickname) {
-        members.add(new Member(prename, nickname));
-        membersAdapter.notifyDataSetChanged();
+        if (!isAlreadyInList(nickname)) {
+            members.add(new Member(prename, nickname));
+            membersAdapter.notifyDataSetChanged();
+        } else {
+            Toast.makeText(requireContext(), getString(R.string.error_nickname), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public boolean isAlreadyInList(String nickname) {
+        for (int i = 0; i < members.size(); i++) {
+            if (members.get(i).getNickname().equals(nickname)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
