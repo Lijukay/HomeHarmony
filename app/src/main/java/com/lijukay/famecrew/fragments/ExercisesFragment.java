@@ -91,7 +91,7 @@ public class ExercisesFragment extends Fragment {
                     .setTitle(getString(R.string.exercises_dialog_title))
                     .setMessage(getString(R.string.exercises_dialog_message))
                     .setPositiveButton(getString(R.string.add_exercise), (dialog, which) -> addNewExercise())
-                    .setNeutralButton(getString(R.string.from_file), (dialog, which) -> mGetContent.launch("application/octet-stream"))
+                    .setNeutralButton(getString(R.string.choos_file), (dialog, which) -> mGetContent.launch("application/octet-stream"))
                     .show());
 
             return v;
@@ -256,7 +256,7 @@ public class ExercisesFragment extends Fragment {
         } else if (result != null) {
             if (getFileExtension(result.toString()).equals("hhr") || getFileExtension(result.toString()).equals("hhm")) {
                 new MaterialAlertDialogBuilder(requireContext(), com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered)
-                        .setTitle(getString(R.string.read_file_extension_not_valid_title))
+                        .setTitle(getString(R.string.read_file_extension_not_right_title))
                         .setMessage(getString(R.string.read_file_extension_not_valid_message_exercises))
                         .setPositiveButton(getString(R.string.okay), (dialog, which) -> dialog.cancel())
                         .show();
