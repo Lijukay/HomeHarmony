@@ -1,8 +1,10 @@
 package com.lijukay.famecrew.fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +18,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.lijukay.famecrew.R;
+import com.lijukay.famecrew.activity.MembersOverview;
 import com.lijukay.famecrew.adapter.MembersAdapter;
 import com.lijukay.famecrew.interfaces.OnClickInterface;
 import com.lijukay.famecrew.objects.Exercise;
@@ -107,6 +110,10 @@ public class MemberOverview extends Fragment implements OnClickInterface {
 
     @Override
     public void onItemClick(int position) {
-
+        Log.e("ff", "true");
+        Intent intent = new Intent(requireContext(), MembersOverview.class);
+        intent.putExtra("MembersPreName", members.get(position).getPrename());
+        intent.putExtra("MembersNickName", members.get(position).getNickname());
+        startActivity(intent);
     }
 }
