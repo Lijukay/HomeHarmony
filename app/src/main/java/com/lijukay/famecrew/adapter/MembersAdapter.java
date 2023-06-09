@@ -59,7 +59,13 @@ public class MembersAdapter extends RecyclerView.Adapter<MembersAdapter.ViewHold
             member = itemView.findViewById(R.id.objectTextHolder);
 
             member.setOnClickListener(v -> {
-                // TODO: 29.05.2023 Add delete item handler
+                if (onClickInterface != null){
+                    int position = getAdapterPosition();
+
+                    if (position != RecyclerView.NO_POSITION){
+                        onClickInterface.onItemClick(position);
+                    }
+                }
             });
         }
     }
