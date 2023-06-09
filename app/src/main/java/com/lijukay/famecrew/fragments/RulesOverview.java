@@ -238,7 +238,7 @@ public class RulesOverview extends Fragment {
         } else if (result != null) {
             if (getFileExtension(result.toString()).equals("hhe") || getFileExtension(result.toString()).equals("hhm")) {
                 new MaterialAlertDialogBuilder(context, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered)
-                        .setTitle(getString(R.string.read_file_extension_not_valid_title))
+                        .setTitle(getString(R.string.read_file_extension_not_right_title))
                         .setMessage(getString(R.string.read_file_extension_not_valid_message_rules))
                         .setPositiveButton(getString(R.string.okay), (dialog, which) -> dialog.cancel())
                         .show();
