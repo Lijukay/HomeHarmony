@@ -71,7 +71,7 @@
                         android:layout_height="wrap_content"
                         android:textAppearance="?attr/textAppearanceBodyMedium"
                         android:textColor="?android:attr/textColorSecondary"
-                        android:text="@string/no_user_selected"
+                        android:text="@string/no_user_selected_warning"
                         />
 
             </LinearLayout>
@@ -104,7 +104,7 @@
                     android:layout_height="wrap_content"
                     android:textAppearance="?attr/textAppearanceBodyMedium"
                     android:textColor="?android:attr/textColorSecondary"
-                    android:text="@string/no_user_selected"
+                    android:text="@string/no_user_selected_warning"
                     />
 
                 <com.google.android.material.progressindicator.LinearProgressIndicator

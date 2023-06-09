@@ -17,7 +17,7 @@
             style="@style/Widget.Material3.Toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:title="Choose file or create new"
+            app:title="@string/createFileOrChoose"
             app:titleCentered="true"/>
     </com.google.android.material.appbar.AppBarLayout>
 

@@ -3,8 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.INTERNET"/>
-    
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <queries>
 
         <!-- Allow any package to handle the sharing action -->
@@ -16,6 +16,7 @@
     </queries>
 
     <application
+        android:name=".activity.MyApp"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -26,6 +27,12 @@
         android:theme="@style/AppTheme"
         tools:targetApi="31">
         <activity
+            android:name=".activity.LogActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.MembersOverview"
+            android:exported="false" />
+        <activity
             android:name=".activity.Settings"
             android:exported="false"
             android:label="Settings" />
@@ -34,18 +41,16 @@
             android:exported="true">
             <intent-filter android:label="Import Exercises">
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
 
                 <data android:mimeType="application/octet-stream" />
                 <data android:mimeType="application/hhe" />
                 <data android:mimeType="application/hhr" />
                 <data android:mimeType="application/hhm" />
-
-
                 <data android:scheme="file" />
                 <data android:scheme="content" />
             </intent-filter>
-
         </activity>
         <activity
             android:name=".activity.OpenFileActivity"
