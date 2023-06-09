@@ -9,10 +9,8 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.OptIn;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.FileProvider;
@@ -20,9 +18,6 @@ import androidx.core.view.WindowCompat;
 
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.MaterialToolbar;
-import com.google.android.material.badge.BadgeDrawable;
-import com.google.android.material.badge.BadgeUtils;
-import com.google.android.material.badge.ExperimentalBadgeUtils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.elevation.SurfaceColors;
@@ -30,6 +25,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.lijukay.famecrew.BuildConfig;
 import com.lijukay.famecrew.R;
+import com.lijukay.famecrew.UncaughtExceptionHandler;
 import com.lijukay.famecrew.fragments.ExercisesFragment;
 import com.lijukay.famecrew.fragments.HomeFragment;
 import com.lijukay.famecrew.fragments.MemberOverview;
@@ -61,6 +57,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler(this));
 
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
 
@@ -370,7 +368,7 @@ public class MainActivity extends AppCompatActivity {
             new MaterialAlertDialogBuilder(this, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered)
                     .setTitle(getString(R.string.share_files_dialog_title))
                     .setMultiChoiceItems(strings, selected, (dialog, which, isChecked) -> selected[which] = isChecked)
-                    .setPositiveButton(getString(R.string.share_files_dialog_positive_button), (dialog, which) -> sendFiles(strings, selected))
+                    .setPositiveButton(getString(R.string.share), (dialog, which) -> sendFiles(strings, selected))
                     .show();
             return true;
         } else if (item.getItemId() == R.id.settings) {

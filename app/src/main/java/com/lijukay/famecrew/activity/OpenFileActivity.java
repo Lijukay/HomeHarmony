@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Environment;
-import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -16,6 +15,7 @@ import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.elevation.SurfaceColors;
 import com.lijukay.famecrew.R;
+import com.lijukay.famecrew.UncaughtExceptionHandler;
 import com.lijukay.famecrew.fragments.CFPage1;
 import com.lijukay.famecrew.fragments.CFPageWelcome;
 
@@ -26,26 +26,30 @@ import java.io.InputStream;
 
 public class OpenFileActivity extends AppCompatActivity {
 
-    private MaterialButton nextCreate, cancelChose;
-    private MaterialToolbar materialToolbar;
-    private SharedPreferences membersPreference, firstStart;
+    private MaterialButton nextCreate;
+    private MaterialButton cancelChose;
+    private SharedPreferences membersPreference;
+    private SharedPreferences firstStart;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
 
         firstStart = getSharedPreferences("firstStart", 0);
         membersPreference = getSharedPreferences("Members", 0);
 
         if (!firstStart.getBoolean("firstStart", true)){
             startActivity(new Intent(this, MainActivity.class));
+            finish();
         }
 
         setContentView(R.layout.activity_open_file);
 
+        Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler(this));
+
         int color = SurfaceColors.SURFACE_2.getColor(this);
-        materialToolbar = findViewById(R.id.materialToolbar);
-        FrameLayout frameLayout = findViewById(R.id.fragmentHolder);
+        MaterialToolbar materialToolbar = findViewById(R.id.materialToolbar);
         RelativeLayout relativeLayout = findViewById(R.id.buttonLayout);
         nextCreate = findViewById(R.id.createNext);
         cancelChose = findViewById(R.id.cancelChoose);
@@ -57,10 +61,7 @@ public class OpenFileActivity extends AppCompatActivity {
 
         getSupportFragmentManager().beginTransaction().setCustomAnimations(rikka.core.R.anim.fade_in, rikka.core.R.anim.fade_out).replace(R.id.fragmentHolder, new CFPageWelcome()).commit();
 
-        nextCreate.setOnClickListener(v -> {
-            getSupportFragmentManager().beginTransaction().setCustomAnimations(rikka.core.R.anim.fade_in, rikka.core.R.anim.fade_out).replace(R.id.fragmentHolder, new CFPage1(nextCreate, cancelChose, materialToolbar)).commit();
-
-        });
+        nextCreate.setOnClickListener(v -> getSupportFragmentManager().beginTransaction().setCustomAnimations(rikka.core.R.anim.fade_in, rikka.core.R.anim.fade_out).replace(R.id.fragmentHolder, CFPage1.newInstance(nextCreate.getId(), cancelChose.getId())).commit());
 
         cancelChose.setOnClickListener(v -> mGetContent.launch("application/octet-stream"));
     }
@@ -102,8 +103,8 @@ public class OpenFileActivity extends AppCompatActivity {
         } else if (result != null) {
             if (getFileExtension(result.toString()).equals("hhe") || getFileExtension(result.toString()).equals("hhr")) {
                 new MaterialAlertDialogBuilder(this, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered)
-                        .setTitle(getString(R.string.read_file_extension_not_valid_title))
-                        .setMessage(getString(R.string.read_file_extension_not_valid_message_members))
+                        .setTitle(getString(R.string.read_file_extension_not_right_title))
+                        .setMessage(getString(R.string.read_file_extension_not_right_message_members))
                         .setPositiveButton(getString(R.string.okay), (dialog, which) -> dialog.cancel())
                         .show();
             } else {
@@ -113,12 +114,6 @@ public class OpenFileActivity extends AppCompatActivity {
                         .setPositiveButton(getString(R.string.okay), ((dialog, which) -> dialog.cancel()))
                         .show();
             }
-        } else {
-            new MaterialAlertDialogBuilder(this, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered)
-                    .setTitle(getString(R.string.unexpected_error_title))
-                    .setMessage(getString(R.string.unexpected_error_message))
-                    .setPositiveButton(getString(R.string.okay), (dialog, which) -> dialog.cancel())
-                    .show();
         }
     });
 

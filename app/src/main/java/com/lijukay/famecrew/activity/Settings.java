@@ -32,6 +32,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.elevation.SurfaceColors;
 import com.lijukay.famecrew.BuildConfig;
 import com.lijukay.famecrew.R;
+import com.lijukay.famecrew.UncaughtExceptionHandler;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -47,6 +48,8 @@ public class Settings extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings_activity);
+
+        Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler(this));
 
         if (savedInstanceState == null) {
             getSupportFragmentManager()

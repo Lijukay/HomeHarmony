@@ -33,10 +33,10 @@ public class MembersOverview extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_members_overview);
 
+        Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler(this));
+
         SharedPreferences exercisesPreference = getSharedPreferences("Exercises", 0);
         exercisesFilePath = exercisesPreference.getString("filePath", null);
-
-        Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler(this));
 
         toolbar = findViewById(R.id.materialToolbar);
         RecyclerView membersExercisesRV = findViewById(R.id.membersExercises);
