@@ -7,4 +7,4 @@ You can add rules, exercises and members to keep everything orderly.
 
 * Beautiful design (using Google's latest Material 3 version)
 * Share rules, exercises and members to others
-* Import existing files (using Home Harmony's very own file extension hh)
+* Import existing files (using Home Harmony's very own file extension hhe [for tasks], hhm [for members] and hhr [for rules]).
