@@ -5,42 +5,39 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.lijukay.famecrew.R;
 import com.lijukay.famecrew.interfaces.OnClickInterface;
+import com.lijukay.famecrew.interfaces.OnLongClickInterface;
 import com.lijukay.famecrew.objects.Exercise;
 import com.lijukay.famecrew.objects.Member;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.ViewHolder> {
     private final Context context;
     private ArrayList<Exercise> exercises;
     private final OnClickInterface onClickInterface;
+    private final OnLongClickInterface onLongClickInterface;
 
-    public ExerciseAdapter(Context context, ArrayList<Exercise> exercises, OnClickInterface onClickInterface) {
+    public ExerciseAdapter(Context context, ArrayList<Exercise> exercises, OnClickInterface onClickInterface, OnLongClickInterface onLongClickInterface) {
         this.context = context;
         this.exercises = exercises;
         this.onClickInterface = onClickInterface;
+        this.onLongClickInterface = onLongClickInterface;
     }
 
     @NonNull
     @Override
     public ExerciseAdapter.ViewHolder onCreateViewHolder (@NonNull ViewGroup parent, int viewType){
-        View v = LayoutInflater.from(context).inflate(R.layout.exercises_no_preview_item, parent, false);
-        return new ViewHolder(v, onClickInterface);
+        View v = LayoutInflater.from(context).inflate(R.layout.item_card_tasks, parent, false);
+        return new ViewHolder(v, onClickInterface, onLongClickInterface);
     }
 
     @SuppressLint("SetTextI18n")
@@ -50,12 +47,20 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.ViewHo
 
         String exerciseName = currentItem.getExName();
         Member member = currentItem.getMember();
+        boolean isDone = currentItem.isDone();
 
         holder.exerciseNameTextView.setText(exerciseName);
-        if (!member.getNickname().equals("") && !getMember(member.getNickname()).getNickname().equals("")) {
-            holder.exerciseMemberTextView.setText(member.getPrename() + " (" + member.getNickname() + ")");
+        if (member != null) {
+            holder.exerciseMemberTextView.setVisibility(View.VISIBLE);
+            holder.exerciseMemberTextView.setText(member.getPrename() + " (" + member.getNickname() + ")"); // TODO: 02.07.2023 Add to String.xml
         } else {
             holder.exerciseMemberTextView.setVisibility(View.GONE);
+        }
+
+        if (isDone) {
+            holder.checkedImg.setVisibility(View.VISIBLE);
+        } else {
+            holder.checkedImg.setVisibility(View.GONE);
         }
     }
 
@@ -74,46 +79,46 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.ViewHo
         public final CardView exerciseHolderCard;
         public final TextView exerciseNameTextView;
         public final TextView exerciseMemberTextView;
+        public final ImageView checkedImg;
 
-        public ViewHolder(@NonNull View itemView, OnClickInterface onClickInterface) {
+        public ViewHolder(@NonNull View itemView, OnClickInterface onClickInterface, OnLongClickInterface onLongClickInterface) {
             super(itemView);
-            exerciseHolderCard = itemView.findViewById(R.id.exerciseHolderCard);
+            exerciseHolderCard = itemView.findViewById(R.id.membersHolderCard);
             exerciseNameTextView = itemView.findViewById(R.id.exerciseName);
             exerciseMemberTextView = itemView.findViewById(R.id.exerciseMemberName);
+            checkedImg = itemView.findViewById(R.id.checkedImg);
+
+            exerciseHolderCard.setOnClickListener(v -> {
+                if (onClickInterface != null) {
+                    int position = getAdapterPosition();
+
+                    if (position != RecyclerView.NO_POSITION) {
+                        onClickInterface.onItemClick(position, "card");
+                    }
+                }
+            });
+
+            exerciseHolderCard.setOnLongClickListener(v -> {
+                if (onLongClickInterface != null) {
+                    int position = getAdapterPosition();
+
+                    if (position != RecyclerView.NO_POSITION) {
+                        onLongClickInterface.onLongClick(position);
+                    }
+                    return true;
+                }
+                return false;
+            });
+
+            checkedImg.setOnClickListener(v -> {
+                if (onClickInterface != null) {
+                    int position = getAdapterPosition();
+
+                    if (position != RecyclerView.NO_POSITION) {
+                        onClickInterface.onItemClick(position, "img");
+                    }
+                }
+            });
         }
     }
-
-    private Member getMember(String memberNickname) {
-
-        if (context.getSharedPreferences("Members", 0).getString("filePath", null) != null){
-            File file = new File(context.getSharedPreferences("Members", 0).getString("filePath", null));
-            StringBuilder fileContent = new StringBuilder();
-
-            try {
-                BufferedReader reader = new BufferedReader(new FileReader(file));
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    fileContent.append(line);
-                }
-                reader.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            Gson gson = new Gson();
-            String jsonString = fileContent.toString();
-
-            Type memberType = new TypeToken<ArrayList<Member>>(){}.getType();
-            ArrayList<Member> members = gson.fromJson(jsonString, memberType);
-
-            for (int i = 0; i < members.size(); i++) {
-                if (members.get(i).getNickname().equals(memberNickname)){
-                    return members.get(i);
-                }
-            }
-        }
-        return new Member("", "");
-    }
-
-
 }

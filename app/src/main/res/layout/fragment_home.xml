@@ -27,7 +27,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/beta_info_title"
+                    android:text="Information to the app-version"
                     android:textAppearance="?attr/textAppearanceTitleMedium"
                     android:textColor="?android:attr/textColorSecondary"
                     />
@@ -35,7 +35,7 @@
                     android:layout_marginTop="8dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/beta_info_message"
+                    android:text="This app-version is not a full release. This is a beta version so it could be unstable and things can lead this app to crash. Report issues if possible. Thank you for testing this application!"
                     android:textAppearance="?attr/textAppearanceBodyMedium"
                     android:textColor="?android:attr/textColorSecondary"
                     />
@@ -63,7 +63,7 @@
                         android:layout_height="wrap_content"
                         android:textAppearance="?attr/textAppearanceTitleMedium"
                         android:textColor="?android:attr/textColorSecondary"
-                        android:text="@string/daily_exercise_home_title"
+                        android:text="Tasks, you need to finish today"
                         />
                     <TextView
                         android:layout_marginTop="8dp"
@@ -71,7 +71,7 @@
                         android:layout_height="wrap_content"
                         android:textAppearance="?attr/textAppearanceBodyMedium"
                         android:textColor="?android:attr/textColorSecondary"
-                        android:text="@string/no_user_selected_warning"
+                        android:text="Please select a user in Settings first, to use this feature."
                         />
 
             </LinearLayout>
@@ -95,7 +95,7 @@
                     android:layout_height="wrap_content"
                     android:textAppearance="?attr/textAppearanceTitleMedium"
                     android:textColor="?android:attr/textColorSecondary"
-                    android:text="@string/daily_progress_title"
+                    android:text="Your progress today"
                     />
                 <TextView
                     android:id="@+id/dailyProgressMessage"
@@ -104,7 +104,6 @@
                     android:layout_height="wrap_content"
                     android:textAppearance="?attr/textAppearanceBodyMedium"
                     android:textColor="?android:attr/textColorSecondary"
-                    android:text="@string/no_user_selected_warning"
                     />
 
                 <com.google.android.material.progressindicator.LinearProgressIndicator
@@ -113,14 +112,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"/>
-
-                <TextView
-                    android:id="@+id/progressText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?attr/textAppearanceBodyMedium"
-                    android:textColor="?android:attr/textColorSecondary"
-                    android:gravity="center"/>
             </LinearLayout>
 
         </com.google.android.material.card.MaterialCardView>

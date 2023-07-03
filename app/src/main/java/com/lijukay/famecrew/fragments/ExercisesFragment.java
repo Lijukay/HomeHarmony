@@ -1,50 +1,82 @@
 package com.lijukay.famecrew.fragments;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Environment;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
+import com.google.android.material.materialswitch.MaterialSwitch;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.lijukay.famecrew.R;
+import com.lijukay.famecrew.activity.SubtaskActivity;
+import com.lijukay.famecrew.activity.MainActivity;
 import com.lijukay.famecrew.adapter.ExerciseAdapter;
+import com.lijukay.famecrew.adapter.SubtasksAdapterSimpleItem;
+import com.lijukay.famecrew.interfaces.OnClickInterface;
+import com.lijukay.famecrew.interfaces.OnLongClickInterface;
 import com.lijukay.famecrew.objects.Exercise;
 import com.lijukay.famecrew.objects.Member;
+import com.lijukay.famecrew.objects.Subtask;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Locale;
 import java.util.Objects;
 
-public class ExercisesFragment extends Fragment {
+public class ExercisesFragment extends Fragment implements OnClickInterface, OnLongClickInterface {
 
-    ExtendedFloatingActionButton efab;
-    RecyclerView recyclerView;
-    ExerciseAdapter exerciseAdapter;
-    ArrayList<Exercise> exercises;
-    ArrayList<Member> members;
-    SharedPreferences exercisesPreference, membersPreference;
+    private ExerciseAdapter exerciseAdapter;
+    private ArrayList<Exercise> exercises;
+    private SharedPreferences exercisesPreference;
+    private String DESTINATION_FILE;
+    private String DESTINATION_MEMBERS_FILE;
+    private int dayOfMonth, month, year;
 
     public ExercisesFragment() {
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        DESTINATION_FILE = requireContext().getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS) + "/" + getString(R.string.app_name) + ".hhe";
+        DESTINATION_MEMBERS_FILE = requireContext().getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS) + "/" + getString(R.string.app_name) + ".hhm";
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -54,159 +86,233 @@ public class ExercisesFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_exercises, container, false);
 
         exercisesPreference = requireContext().getSharedPreferences("Exercises", 0);
-        membersPreference = requireContext().getSharedPreferences("Members", 0);
 
-        efab = v.findViewById(R.id.addExercise);
-        recyclerView = v.findViewById(R.id.exercisesRV);
-        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext().getApplicationContext()));
+        Calendar calendar = Calendar.getInstance();
+        dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
+        month = calendar.get(Calendar.MONTH);
+        year = calendar.get(Calendar.YEAR);
+
+        RecyclerView recyclerView = v.findViewById(R.id.exercisesRV);
+        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+
+        showFirstStartDialogIfNeeded();
 
         exercises = new ArrayList<>();
 
-        if (exercisesPreference.getString("filePath", null) != null) {
-            getFileContent(new File(exercisesPreference.getString("filePath", null)));
-        } else if (exercisesPreference.getBoolean("firstStart", true)) {
-            new MaterialAlertDialogBuilder(requireContext(), com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered)
-                    .setTitle(getString(R.string.first_start_dialog_title_exercises))
-                    .setMessage(getString(R.string.first_start_dialog_message_exercises))
-                    .setPositiveButton(getString(R.string.okay), (dialog, which) -> {
-                        dialog.cancel();
-                    })
-                    .setOnCancelListener(dialog -> exercisesPreference.edit().putBoolean("firstStart", false).apply())
-                    .show();
-        } else if (exercisesPreference.getBoolean("shouldExist", false)) {
-            new MaterialAlertDialogBuilder(requireContext(), com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered)
-                    .setTitle(getString(R.string.file_not_found_title))
-                    .setMessage(getString(R.string.file_not_found_exercise))
-                    .setPositiveButton(getString(R.string.okay), (dialog, which) -> dialog.cancel())
-                    .show();
+        if (new File(DESTINATION_FILE).exists()){
+            try {
+                getFileContent();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
 
-        exerciseAdapter = new ExerciseAdapter(requireContext(), exercises, null);
+        exerciseAdapter = new ExerciseAdapter(requireContext(), exercises, this, this);
+        updateExercises();
+
         recyclerView.setAdapter(exerciseAdapter);
 
+        try {
+            updateFinishedExercisesIfNeeded();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
+        try {
+            updateMembersExerciseIfNeeded();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
-            efab.setOnClickListener(v1 ->
-                    new MaterialAlertDialogBuilder(requireContext(), com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered)
-                    .setTitle(getString(R.string.exercises_dialog_title))
-                    .setMessage(getString(R.string.exercises_dialog_message))
-                    .setPositiveButton(getString(R.string.add_exercise), (dialog, which) -> addNewExercise())
-                    .setNeutralButton(getString(R.string.choos_file), (dialog, which) -> mGetContent.launch("application/octet-stream"))
-                    .show());
+        return v;
+    }
 
-            return v;
+    private void updateMembersExerciseIfNeeded() throws IOException {
+        for (Exercise exercise : exercises) {
+            Member member = exercise.getMember();
+            if (member != null && getMember(member.getNickname()) == null) {
+                exercises.set(exercises.indexOf(exercise), new Exercise(exercise.getExName(), null, exercise.isDone(), exercise.getDoneDay(), exercise.getDoneMonth(), exercise.getDoneYear(), exercise.getDoneByMember(), exercise.isVoluntary(), exercise.getSubtasks()));
+            }
+        }
+
+        saveFileContent();
+    }
+
+    private void updateFinishedExercisesIfNeeded() throws IOException {
+        for (Exercise exercise : exercises) {
+            if (exercise.isDone() && (dayOfMonth > exercise.getDoneDay() || month > exercise.getDoneMonth() || year > exercise.getDoneYear())) {
+                exercises.set(exercises.indexOf(exercise), new Exercise(exercise.getExName(), exercise.getMember(), false, 0, 0, 0, null, exercise.isVoluntary(), exercise.getSubtasks()));
+            }
+        }
+
+        saveFileContent();
+    }
+
+    private void showFirstStartDialogIfNeeded() {
+        if (exercisesPreference.getBoolean("firstStart", true)) {
+            new MaterialAlertDialogBuilder(requireContext(), com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered)
+                    .setTitle("Tutorial for tasks")
+                    .setMessage("Tasks include exercises but since you have not created a task, there is no file yet. To create a task, simply press on \"Add task\" and choose whether you like to create a new task or to add tasks from a file. Then, a task will be created.")
+                    .setPositiveButton("Okay", (dialog, which) -> dialog.cancel())
+                    .setOnCancelListener(dialog -> exercisesPreference.edit().putBoolean("firstStart", false).apply())
+                    .show();
+        }
+    }
+
+    private void addNewExercise() {
+        BottomSheetDialog dialog = new BottomSheetDialog(requireContext());
+
+        ArrayList<Subtask> subtasks = new ArrayList<>();
+        SubtasksAdapterSimpleItem subtasksAdapter = new SubtasksAdapterSimpleItem(requireContext(), subtasks);
+
+        View v = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_add_task, (ViewGroup) getView(), false);
+
+        TextInputLayout exerciseName = v.findViewById(R.id.exerciseNameTF);
+        TextInputLayout member = v.findViewById(R.id.memberTF);
+        MaterialSwitch voluntary = v.findViewById(R.id.voluntaryCheck);
+        MaterialButton addToSubtask = v.findViewById(R.id.addToSubtasks);
+        TextInputEditText editText = v.findViewById(R.id.subtasks);
+        RecyclerView recyclerView = v.findViewById(R.id.subtasksList);
+        MaterialCardView listHolderCard = v.findViewById(R.id.list_holder_card);
+        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+
+        recyclerView.setAdapter(subtasksAdapter);
+
+        voluntary.setOnCheckedChangeListener((buttonView, isChecked) -> member.setVisibility(isChecked ? View.GONE : View.VISIBLE));
+
+        member.setVisibility(voluntary.isChecked() ? View.GONE : View.VISIBLE);
+
+        addToSubtask.setOnClickListener(v12 -> {
+            listHolderCard.setVisibility(View.VISIBLE);
+            String subtaskName = Objects.requireNonNull(editText.getText()).toString().trim();
+
+            if (!TextUtils.isEmpty(subtaskName)) {
+                subtasks.add(new Subtask(subtaskName, null));
+                subtasksAdapter.updateData(subtasks);
+                editText.setText("");
+            } else {
+                Toast.makeText(requireContext(), "Nothing to add", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        v.findViewById(R.id.buttonAdd).setOnClickListener(v1 -> {
+            String name = Objects.requireNonNull(exerciseName.getEditText()).getText().toString().trim();
+            if (TextUtils.isEmpty(name)) {
+                Toast.makeText(requireContext(), "Task name required", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            for (Exercise exercise : exercises) {
+                if (exercise.getExName().toLowerCase(Locale.ROOT).equals(name.toLowerCase(Locale.ROOT))) {
+                    Toast.makeText(requireContext(), "Task with the same name exists", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+            }
+
+            Member exerciseMember = null;
+            if (!voluntary.isChecked()) {
+                try {
+                    exerciseMember = getMember(Objects.requireNonNull(member.getEditText()).getText().toString().trim());
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                if (exerciseMember == null) {
+                    voluntary.setChecked(true);
+                }
+            }
+
+            Exercise exercise = new Exercise(name, exerciseMember, false, 0, 0, 0, null, voluntary.isChecked(), subtasks);
+            exercises.add(exercise);
+            updateExercises();
+            try {
+                saveFileContent();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            dialog.dismiss();
+        });
+
+        dialog.setContentView(v);
+        dialog.show();
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    private void addNewExercise() {
-        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(requireContext(), com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered);
-
-        builder.setTitle(getString(R.string.new_exercise_title));
-
-        View viewInflated = LayoutInflater.from(getContext()).inflate(R.layout.add_exercise_dialog, (ViewGroup) getView(), false);
-        TextInputLayout exerciseName = viewInflated.findViewById(R.id.exerciseNameTF);
-        TextInputLayout member = viewInflated.findViewById(R.id.memberTF);
-        builder.setView(viewInflated);
-
-        builder.setPositiveButton(getString(R.string.add), (dialog, which) -> {
-            if (!Objects.requireNonNull(exerciseName.getEditText()).getText().toString().trim().equals("")) {
-                if (Objects.requireNonNull(member.getEditText()).getText().toString().trim().equals("")) {
-                    exercises.add(new Exercise(exerciseName.getEditText().getText().toString().trim(), new Member("", "")));
-                } else {
-                    exercises.add(new Exercise(exerciseName.getEditText().getText().toString().trim(), getMember(member.getEditText().getText().toString().trim())));
-                }
-                exerciseAdapter.notifyDataSetChanged();
-                addExercisesToFile();
-            }
-        });
-        builder.show();
+    private void updateExercises() {
+        exerciseAdapter.notifyDataSetChanged(); // TODO: 19.06.2023 Check if used elsewhere, else replace with notifyDataInserted();
     }
 
-    private Member getMember(String memberNickname) {
-
-        if (membersPreference.getString("filePath", null) != null){
-            File file = new File(membersPreference.getString("filePath", null));
-            StringBuilder fileContent = new StringBuilder();
-
-            try {
-                BufferedReader reader = new BufferedReader(new FileReader(file));
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    fileContent.append(line);
-                }
-                reader.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            members = new ArrayList<>();
-            Gson gson = new Gson();
-            String jsonString = fileContent.toString();
-
-            Type memberType = new TypeToken<ArrayList<Member>>(){}.getType();
-            members = gson.fromJson(jsonString, memberType);
-
-            for (int i = 0; i < members.size(); i++) {
-                if (members.get(i).getNickname().equals(memberNickname)){
-                    return members.get(i);
-                }
-            }
-        }
-        return new Member("", "");
-    }
-
-    private void getFileContent(File file) {
-        StringBuilder fileContent = new StringBuilder();
-
+    public void removeExercise(int position) {
+        exercises.remove(position);
+        updateExercises();
         try {
-            BufferedReader reader = new BufferedReader(new FileReader(file));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                fileContent.append(line);
-            }
-            reader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        exercises = new ArrayList<>();
-        Gson gson = new Gson();
-        String jsonString = fileContent.toString();
-        Type exerciseType = new TypeToken<ArrayList<Exercise>>(){}.getType();
-
-
-        exercises = gson.fromJson(jsonString, exerciseType);
-    }
-
-    private void addExercisesToFile() {
-        Gson gson = new Gson();
-        if (exercises.size() != 0) {
-            String jsonString = gson.toJson(exercises);
-            saveJsonAsFile(requireContext(), jsonString);
-        }
-    }
-
-    private void saveJsonAsFile(Context context, String jsonString) {
-        try {
-            String destination = context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS).toString() + "/" + getString(R.string.app_name) + ".hhe";
-            File file = new File(destination);
-
-            FileOutputStream outputStream = new FileOutputStream(file);
-            outputStream.write(jsonString.getBytes());
-            outputStream.close();
-
-            exercisesPreference.edit().putString("filePath", file.getAbsolutePath()).apply();
-
+            saveFileContent();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    ActivityResultLauncher<String> mGetContent = registerForActivityResult(new ActivityResultContracts.GetContent(), result -> {
-        if (result != null && getFileExtension(result.toString()).equals("hhe")) {
+    private void getFileContent() throws IOException {
+        StringBuilder fileContentBuilder = new StringBuilder();
+        FileInputStream fis = new FileInputStream(DESTINATION_FILE);
+        InputStreamReader isr = new InputStreamReader(fis);
+        BufferedReader br = new BufferedReader(isr);
+        String line;
+
+        while ((line = br.readLine()) != null) {
+            fileContentBuilder.append(line).append("\n");
+        }
+
+        br.close();
+
+        Gson gson = new Gson();
+        exercises = gson.fromJson(fileContentBuilder.toString(), new TypeToken<ArrayList<Exercise>>() {}.getType());
+    }
+
+    private void saveFileContent() throws IOException {
+        Gson gson = new Gson();
+        String exerciseJson = gson.toJson(exercises);
+
+        FileOutputStream fos = new FileOutputStream(DESTINATION_FILE);
+        OutputStreamWriter osw = new OutputStreamWriter(fos);
+        BufferedWriter bw = new BufferedWriter(osw);
+        bw.write(exerciseJson);
+        bw.close();
+    }
+
+    private Member getMember(String memberNickname) throws IOException {
+        StringBuilder fileContentBuilder = new StringBuilder();
+
+        if (new File(DESTINATION_MEMBERS_FILE).exists()){
+            FileInputStream fis = new FileInputStream(DESTINATION_MEMBERS_FILE);
+            InputStreamReader isr = new InputStreamReader(fis);
+            BufferedReader br = new BufferedReader(isr);
+            String line;
+
+            while ((line = br.readLine()) != null) {
+                fileContentBuilder.append(line).append("\n");
+            }
+
+            br.close();
+
+            Gson gson = new Gson();
+            ArrayList<Member> members = gson.fromJson(fileContentBuilder.toString(), new TypeToken<ArrayList<Member>>() {}.getType());
+
+            for (Member member : members) {
+                if (member.getNickname().equals(memberNickname)) {
+                    return member;
+                }
+            }
+            return null;
+        }
+
+        return null;
+    }
+
+    public ActivityResultLauncher<String> mGetContent = registerForActivityResult(new ActivityResultContracts.GetContent(), result -> {
+        if (result != null && ((MainActivity) requireActivity()).getFileExtension(result.toString()).equals("hhe")) {
             try {
                 InputStream inputStream = requireContext().getContentResolver().openInputStream(result);
-                File outputFile = createOutputFile();
+
+                File outputFile = new File(DESTINATION_FILE);
 
                 if (inputStream != null) {
                     FileOutputStream fileOutputStream = new FileOutputStream(outputFile);
@@ -217,7 +323,6 @@ public class ExercisesFragment extends Fragment {
                         fileOutputStream.write(buffer, 0, length);
                     }
                     fileOutputStream.close();
-                    exercisesPreference.edit().putString("filePath", outputFile.getAbsolutePath()).apply();
                     File file = new File(outputFile.getAbsolutePath());
                     StringBuilder fileContent = new StringBuilder();
 
@@ -238,13 +343,9 @@ public class ExercisesFragment extends Fragment {
                     Type exercisesType = new TypeToken<ArrayList<Exercise>>(){}.getType();
                     exercises = gson.fromJson(jsonString, exercisesType);
                     exerciseAdapter.updateData(exercises);
-                    addExercisesToFile();
+                    saveFileContent();
                 } else {
-                    new MaterialAlertDialogBuilder(requireContext(), com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered)
-                            .setTitle(getString(R.string.read_file_dialog_error_title))
-                            .setMessage(getString(R.string.read_file_dialog_error_message))
-                            .setPositiveButton(getString(R.string.okay), (dialog, which) -> dialog.cancel())
-                            .show();
+                    Toast.makeText(requireContext(), "Unable to read file", Toast.LENGTH_SHORT).show();
                 }
 
                 if (inputStream != null) {
@@ -254,32 +355,167 @@ public class ExercisesFragment extends Fragment {
                 throw new RuntimeException(e);
             }
         } else if (result != null) {
-            if (getFileExtension(result.toString()).equals("hhr") || getFileExtension(result.toString()).equals("hhm")) {
+            if (((MainActivity) requireActivity()).getFileExtension(result.toString()).equals("hhr") || ((MainActivity) requireActivity()).getFileExtension(result.toString()).equals("hhm")) {
                 new MaterialAlertDialogBuilder(requireContext(), com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered)
-                        .setTitle(getString(R.string.read_file_extension_not_right_title))
-                        .setMessage(getString(R.string.read_file_extension_not_valid_message_exercises))
-                        .setPositiveButton(getString(R.string.okay), (dialog, which) -> dialog.cancel())
+                        .setTitle("Wrong file extension")
+                        .setMessage("This is a Home Harmony-file extension but it is not the correct extension for tasks. Please use a file, which extension is .hhe.")
+                        .setPositiveButton("Okay", (dialog, which) -> dialog.cancel())
                         .show();
             } else if (!result.toString().endsWith("hhr") && !result.toString().endsWith("hhe") && !result.toString().endsWith("hhm")) {
                 new MaterialAlertDialogBuilder(requireContext(), com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered)
-                        .setTitle(getString(R.string.read_file_extension_not_supported_title))
-                        .setMessage(getString(R.string.read_file_extension_not_supported_message_exercises))
-                        .setPositiveButton(getString(R.string.okay), (dialog, which) -> dialog.cancel())
+                        .setTitle("Unsupported file extension")
+                        .setMessage("This is not a Home Harmony file. Please select a file, which extension ends with hhe.")
+                        .setPositiveButton("Okay", (dialog, which) -> dialog.cancel())
                         .show();
             }
         }
     });
-    private String getFileExtension(String filePath) {
-        if (filePath != null && !filePath.isEmpty()) {
-            int dotIndex = filePath.lastIndexOf('.');
-            if (dotIndex != -1 && dotIndex < filePath.length() - 1) {
-                return filePath.substring(dotIndex + 1).toLowerCase();
-            }
-        }
-        return "";
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        MenuItem addItem = menu.findItem(R.id.addItem);
+        addItem.setVisible(true);
     }
-    private File createOutputFile() {
-        String destination = requireContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString() + "/" + getString(R.string.app_name) + ".hhe";
-        return new File(destination);
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.addItem) {
+            new MaterialAlertDialogBuilder(requireContext(), com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered)
+                    .setTitle("Tasks")
+                    .setMessage("You can create a new file yourself by clicking on \"Add task\" and open a file, that includes tasks, by clicking on \"From File\".")
+                    .setPositiveButton("Add task", (dialog, which) -> addNewExercise())
+                    .setNeutralButton("From file", (dialog, which) -> mGetContent.launch("application/octet-stream"))
+                    .show();
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void onItemClick(int position, String type) {
+        if (type.equals("img")) {
+            Exercise exercise = exercises.get(position);
+            Member doneByMember = exercise.getDoneByMember();
+            if (doneByMember != null) {
+                new MaterialAlertDialogBuilder(requireContext(), com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered)
+                        .setTitle("Task done!")
+                        .setMessage("This task is labeled as finished by " + doneByMember.getPrename() + " (" + doneByMember.getNickname() + ").")
+                        .setPositiveButton("Okay", (dialog, which) -> dialog.cancel())
+                        .show();
+            }
+        } else {
+            Intent intent = new Intent(requireContext(), SubtaskActivity.class);
+            intent.putExtra("Exercise name", exercises.get(position).getExName());
+            startActivity(intent);
+        }
+    }
+
+    @Override
+    public void onLongClick(int position) {
+        BottomSheetDialog dialog = new BottomSheetDialog(requireContext());
+        View viewInflated = LayoutInflater.from(getContext()).inflate(R.layout.dialog_update_task, (ViewGroup) getView(), false);
+        TextInputLayout exerciseName = viewInflated.findViewById(R.id.exercisesName);
+        MaterialSwitch voluntary = viewInflated.findViewById(R.id.voluntaryCheck);
+        TextInputLayout membersNickname = viewInflated.findViewById(R.id.exerciseMembersNickname);
+        MaterialSwitch doneSwitch = viewInflated.findViewById(R.id.doneSwitch);
+        TextView doneInfo = viewInflated.findViewById(R.id.doneInfo);
+        TextInputLayout doneMember = viewInflated.findViewById(R.id.doneMembersNickname);
+
+        doneSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                doneInfo.setVisibility(isChecked ? View.VISIBLE : View.GONE);
+                doneMember.setVisibility(isChecked ? View.VISIBLE : View.GONE);
+            });
+
+        voluntary.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            membersNickname.setVisibility(isChecked ? View.GONE : View.VISIBLE);
+        });
+
+        Exercise exercise = exercises.get(position);
+        Objects.requireNonNull(exerciseName.getEditText()).setText(exercise.getExName());
+
+        Member member = exercise.getMember();
+
+        if (member != null) {
+            Objects.requireNonNull(membersNickname.getEditText()).setText(member.getNickname());
+        }
+
+        Member doneByMember = exercise.getDoneByMember();
+        if (doneByMember != null) {
+            Objects.requireNonNull(doneMember.getEditText()).setText(doneByMember.getNickname());
+        }
+
+        doneSwitch.setChecked(exercise.isDone());
+        voluntary.setChecked(exercise.isVoluntary());
+        doneInfo.setVisibility(exercise.isDone() ? View.VISIBLE : View.GONE);
+        doneMember.setVisibility(exercise.isDone() ? View.VISIBLE : View.GONE);
+        membersNickname.setVisibility(exercise.isVoluntary() ? View.GONE : View.VISIBLE);
+
+        viewInflated.findViewById(R.id.buttonUpdate).setOnClickListener(v -> {
+
+            String newName = Objects.requireNonNull(exerciseName.getEditText()).getText().toString().trim();
+            String newMemberNickname = Objects.requireNonNull(membersNickname.getEditText()).getText().toString().trim();
+            boolean newIsDone = doneSwitch.isChecked();
+            String newDoneByNickname = Objects.requireNonNull(doneMember.getEditText()).getText().toString().trim();
+
+            if (TextUtils.isEmpty(newName)) {
+                Toast.makeText(requireContext(), "Task name required", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            for (int i = 0; i < exercises.size(); i++) {
+                if (exercises.get(i).getExName().toLowerCase(Locale.ROOT).equals(newName.toLowerCase(Locale.ROOT)) && i != position) {
+                    Toast.makeText(requireContext(), "Task with the same name exists", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+            }
+
+            Member newMember;
+            Member newDoneByMember;
+
+            try {
+                newMember = getMember(newMemberNickname);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            try {
+                newDoneByMember = newIsDone ? getMember(newDoneByNickname) : null;
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            if (voluntary.isChecked()) {
+                if (newIsDone && newDoneByMember == null) {
+                    newIsDone = false;
+                    Toast.makeText(requireContext(), "Task undone: Member does not exist", Toast.LENGTH_SHORT).show();
+                }
+                exercises.set(position, new Exercise(newName, null, newIsDone, dayOfMonth, month, year, newDoneByMember, true, exercise.getSubtasks()));
+            } else {
+                if (newIsDone && newDoneByMember == null) {
+                    newIsDone = false;
+                    Toast.makeText(requireContext(), "Task undone: Member does not exist", Toast.LENGTH_SHORT).show();
+                }
+                if (newMember == null) {
+                    voluntary.setChecked(true);
+                    Toast.makeText(requireContext(), "Task undone: Member does not exist", Toast.LENGTH_SHORT).show();
+                }
+                exercises.set(position, new Exercise(newName, newMember, newIsDone, dayOfMonth, month, year, newDoneByMember, voluntary.isChecked(), exercise.getSubtasks()));
+            }
+
+            try {
+                saveFileContent();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            exerciseAdapter.updateData(exercises);
+            dialog.dismiss();
+        });
+
+        viewInflated.findViewById(R.id.buttonDelete).setOnClickListener(v -> {
+            removeExercise(position);
+            dialog.dismiss();
+        });
+
+        dialog.setContentView(viewInflated);
+        dialog.show();
     }
 }

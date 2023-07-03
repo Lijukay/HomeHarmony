@@ -8,7 +8,7 @@
     tools:context=".activity.MainActivity">
 
         <com.google.android.material.appbar.AppBarLayout
-            android:id="@+id/topAppBar"
+            android:id="@+id/top_app_bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:liftOnScroll="true"
@@ -27,7 +27,7 @@
         android:layout_height="match_parent"
         android:id="@+id/fragmentContainer"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        android:layout_below="@id/topAppBar"
+        android:layout_below="@id/top_app_bar"
         android:layout_above="@id/navigationView"/>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView

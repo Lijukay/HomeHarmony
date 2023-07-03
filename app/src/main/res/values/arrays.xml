@@ -13,4 +13,10 @@
     <string-array name="members">
 
     </string-array>
+    <string-array name="repition_items">
+        <item>Daily</item>
+        <item>Weekly</item>
+        <item>Monthly</item>
+        <item>None</item>
+    </string-array>
 </resources>

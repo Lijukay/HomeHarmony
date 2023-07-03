@@ -1,14 +1,19 @@
 package com.lijukay.famecrew.activity;
 
+import android.content.ContentResolver;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
+import android.provider.OpenableColumns;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,22 +30,22 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.lijukay.famecrew.BuildConfig;
 import com.lijukay.famecrew.R;
-import com.lijukay.famecrew.UncaughtExceptionHandler;
+import com.lijukay.famecrew.utils.UncaughtExceptionHandler;
 import com.lijukay.famecrew.fragments.ExercisesFragment;
 import com.lijukay.famecrew.fragments.HomeFragment;
-import com.lijukay.famecrew.fragments.MemberOverview;
-import com.lijukay.famecrew.fragments.RulesOverview;
+import com.lijukay.famecrew.fragments.MembersFragment;
+import com.lijukay.famecrew.fragments.RulesFragment;
 import com.lijukay.famecrew.objects.Exercise;
 import com.lijukay.famecrew.objects.Member;
 import com.lijukay.famecrew.objects.Rule;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.Type;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
@@ -48,10 +53,8 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<Member> members;
     private ArrayList<Exercise> exercises;
     private ArrayList<Rule> rules;
-    private SharedPreferences membersPreference, exercisesPreference, rulesPreference;
-    private BottomNavigationView navigationBar;
-    private MenuItem homeItem, membersItem, exercisesItem, rulesItem;
-    private MaterialToolbar materialToolbar;
+    private MenuItem bottomNavigationViewHomeItem, bottomNavigationViewMembersItem, bottomNavigationViewTaskItem, bottomNavigationViewRulesItem;
+    private MaterialToolbar mainActivityToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,291 +65,167 @@ public class MainActivity extends AppCompatActivity {
 
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
 
-        membersPreference = getSharedPreferences("Members", 0);
-        exercisesPreference = getSharedPreferences("Exercises", 0);
-        rulesPreference = getSharedPreferences("Rules", 0);
+        mainActivityToolbar = findViewById(R.id.titleBar);
 
-        AppBarLayout appBarLayout = findViewById(R.id.topAppBar);
-        navigationBar = findViewById(R.id.navigationView);
+        setSupportActionBar(mainActivityToolbar);
 
-        int color = SurfaceColors.SURFACE_2.getColor(this);
+        BottomNavigationView mainActivityBottomNavigationView = findViewById(R.id.navigationView);
+        AppBarLayout mainActivityAppBarLayout = findViewById(R.id.top_app_bar);
+        int surfaceColor = SurfaceColors.SURFACE_2.getColor(this);
+        Menu mainActivityBottomNavigationViewMenu = mainActivityBottomNavigationView.getMenu();
 
-        appBarLayout.setBackgroundColor(color);
+        mainActivityAppBarLayout.setBackgroundColor(surfaceColor);
 
-        materialToolbar = findViewById(R.id.titleBar);
+        bottomNavigationViewHomeItem = mainActivityBottomNavigationViewMenu.findItem(R.id.homeItem);
+        bottomNavigationViewMembersItem = mainActivityBottomNavigationViewMenu.findItem(R.id.memberItem);
+        bottomNavigationViewTaskItem = mainActivityBottomNavigationViewMenu.findItem(R.id.taskItem);
+        bottomNavigationViewRulesItem = mainActivityBottomNavigationViewMenu.findItem(R.id.rulesItem);
 
-        setSupportActionBar(materialToolbar);
-
-        Menu navigationBarMenu = navigationBar.getMenu();
-        homeItem = navigationBarMenu.findItem(R.id.home);
-        membersItem = navigationBarMenu.findItem(R.id.members);
-        exercisesItem = navigationBarMenu.findItem(R.id.exercises);
-        rulesItem = navigationBarMenu.findItem(R.id.rules);
-
-        //Inflate fragment: Home
         getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, new HomeFragment()).commit();
+        mainActivityToolbar.setTitle("Home"); // TODO: 02.07.2023 Add Home to Strings.xml
 
-        selectedItem();
-
-
-        navigationBar.setOnItemSelectedListener(item -> {
-            if (item.getItemId() == R.id.home) {
+        mainActivityBottomNavigationView.setOnItemSelectedListener(item -> {
+            if (item.getItemId() == R.id.homeItem) {
                 getSupportFragmentManager().beginTransaction().setCustomAnimations(rikka.core.R.anim.fade_in, rikka.core.R.anim.fade_out).replace(R.id.fragmentContainer, new HomeFragment()).commit();
-                homeItem.setIcon(AppCompatResources.getDrawable(MainActivity.this, R.drawable.home_filled));
-                membersItem.setIcon(AppCompatResources.getDrawable(MainActivity.this, R.drawable.member_icon));
-                exercisesItem.setIcon(AppCompatResources.getDrawable(MainActivity.this, R.drawable.exercises_icon));
-                rulesItem.setIcon(AppCompatResources.getDrawable(MainActivity.this, R.drawable.rulebook_icon));
+                mainActivityToolbar.setTitle("Home"); // TODO: 02.07.2023 Add Home to Strings.xml
+
+                bottomNavigationViewHomeItem.setIcon(AppCompatResources.getDrawable(MainActivity.this, R.drawable.home_filled));
+                bottomNavigationViewMembersItem.setIcon(AppCompatResources.getDrawable(MainActivity.this, R.drawable.member_icon));
+                bottomNavigationViewTaskItem.setIcon(AppCompatResources.getDrawable(MainActivity.this, R.drawable.exercises_icon));
+                bottomNavigationViewRulesItem.setIcon(AppCompatResources.getDrawable(MainActivity.this, R.drawable.rulebook_icon));
+
                 return true;
-            } else if (item.getItemId() == R.id.members) {
-                getSupportFragmentManager().beginTransaction().setCustomAnimations(rikka.core.R.anim.fade_in, rikka.core.R.anim.fade_out).replace(R.id.fragmentContainer, new MemberOverview(materialToolbar)).commit();
-                homeItem.setIcon(AppCompatResources.getDrawable(MainActivity.this, R.drawable.home_icon));
-                membersItem.setIcon(AppCompatResources.getDrawable(MainActivity.this, R.drawable.members_icon_filled));
-                exercisesItem.setIcon(AppCompatResources.getDrawable(MainActivity.this, R.drawable.exercises_icon));
-                rulesItem.setIcon(AppCompatResources.getDrawable(MainActivity.this, R.drawable.rulebook_icon));
+            } else if (item.getItemId() == R.id.memberItem) {
+                getSupportFragmentManager().beginTransaction().setCustomAnimations(rikka.core.R.anim.fade_in, rikka.core.R.anim.fade_out).replace(R.id.fragmentContainer, new MembersFragment()).commit();
+                mainActivityToolbar.setTitle("Members"); // TODO: 02.07.2023 Add Members to Strings.xml
+
+                bottomNavigationViewHomeItem.setIcon(AppCompatResources.getDrawable(MainActivity.this, R.drawable.home_icon));
+                bottomNavigationViewMembersItem.setIcon(AppCompatResources.getDrawable(MainActivity.this, R.drawable.members_icon_filled));
+                bottomNavigationViewTaskItem.setIcon(AppCompatResources.getDrawable(MainActivity.this, R.drawable.exercises_icon));
+                bottomNavigationViewRulesItem.setIcon(AppCompatResources.getDrawable(MainActivity.this, R.drawable.rulebook_icon));
+
                 return true;
-            } else if (item.getItemId() == R.id.exercises) {
+            } else if (item.getItemId() == R.id.taskItem) {
                 getSupportFragmentManager().beginTransaction().setCustomAnimations(rikka.core.R.anim.fade_in, rikka.core.R.anim.fade_out).replace(R.id.fragmentContainer, new ExercisesFragment()).commit();
-                homeItem.setIcon(AppCompatResources.getDrawable(MainActivity.this, R.drawable.home_icon));
-                membersItem.setIcon(AppCompatResources.getDrawable(MainActivity.this, R.drawable.member_icon));
-                exercisesItem.setIcon(AppCompatResources.getDrawable(MainActivity.this, R.drawable.exercises_filled));
-                rulesItem.setIcon(AppCompatResources.getDrawable(MainActivity.this, R.drawable.rulebook_icon));
+                mainActivityToolbar.setTitle("Exercises"); // TODO: 02.07.2023 Add Exercises to Strings.xml and rename it to Tasks
+
+                bottomNavigationViewHomeItem.setIcon(AppCompatResources.getDrawable(MainActivity.this, R.drawable.home_icon));
+                bottomNavigationViewMembersItem.setIcon(AppCompatResources.getDrawable(MainActivity.this, R.drawable.member_icon));
+                bottomNavigationViewTaskItem.setIcon(AppCompatResources.getDrawable(MainActivity.this, R.drawable.exercises_filled));
+                bottomNavigationViewRulesItem.setIcon(AppCompatResources.getDrawable(MainActivity.this, R.drawable.rulebook_icon));
+
                 return true;
-            } else if (item.getItemId() == R.id.rules) {
-                getSupportFragmentManager().beginTransaction().setCustomAnimations(rikka.core.R.anim.fade_in, rikka.core.R.anim.fade_out).replace(R.id.fragmentContainer, new RulesOverview(materialToolbar)).commit();
-                homeItem.setIcon(AppCompatResources.getDrawable(MainActivity.this, R.drawable.home_icon));
-                membersItem.setIcon(AppCompatResources.getDrawable(MainActivity.this, R.drawable.member_icon));
-                exercisesItem.setIcon(AppCompatResources.getDrawable(MainActivity.this, R.drawable.exercises_icon));
-                rulesItem.setIcon(AppCompatResources.getDrawable(MainActivity.this, R.drawable.rulebook_filled));
+            } else if (item.getItemId() == R.id.rulesItem) {
+                getSupportFragmentManager().beginTransaction().setCustomAnimations(rikka.core.R.anim.fade_in, rikka.core.R.anim.fade_out).replace(R.id.fragmentContainer, new RulesFragment()).commit();
+                mainActivityToolbar.setTitle("Rules"); // TODO: 02.07.2023 Add Rules to Strings.xml
+
+                bottomNavigationViewHomeItem.setIcon(AppCompatResources.getDrawable(MainActivity.this, R.drawable.home_icon));
+                bottomNavigationViewMembersItem.setIcon(AppCompatResources.getDrawable(MainActivity.this, R.drawable.member_icon));
+                bottomNavigationViewTaskItem.setIcon(AppCompatResources.getDrawable(MainActivity.this, R.drawable.exercises_icon));
+                bottomNavigationViewRulesItem.setIcon(AppCompatResources.getDrawable(MainActivity.this, R.drawable.rulebook_filled));
+
                 return true;
             }
             return false;
         });
 
-        //Import data from a file which was called outside the application
-        Uri fileUri = getIntentData(getIntent());
+        Uri fileUri = getIntent().getData();
         if (fileUri != null) {
             getContentOfImportedFile(fileUri);
-        }
-
-    }
-
-    private void selectedItem() {
-        if (navigationBar.getSelectedItemId() == R.id.home) {
-            homeItem.setIcon(AppCompatResources.getDrawable(MainActivity.this, R.drawable.home_filled));
-            membersItem.setIcon(AppCompatResources.getDrawable(MainActivity.this, R.drawable.member_icon));
-            exercisesItem.setIcon(AppCompatResources.getDrawable(MainActivity.this, R.drawable.exercises_icon));
-            rulesItem.setIcon(AppCompatResources.getDrawable(MainActivity.this, R.drawable.rulebook_icon));
-        } else if (navigationBar.getSelectedItemId() == R.id.members) {
-            homeItem.setIcon(AppCompatResources.getDrawable(MainActivity.this, R.drawable.home_icon));
-            membersItem.setIcon(AppCompatResources.getDrawable(MainActivity.this, R.drawable.members_icon_filled));
-            exercisesItem.setIcon(AppCompatResources.getDrawable(MainActivity.this, R.drawable.exercises_icon));
-            rulesItem.setIcon(AppCompatResources.getDrawable(MainActivity.this, R.drawable.rulebook_icon));
-        } else if (navigationBar.getSelectedItemId() == R.id.exercises) {
-            homeItem.setIcon(AppCompatResources.getDrawable(MainActivity.this, R.drawable.home_icon));
-            membersItem.setIcon(AppCompatResources.getDrawable(MainActivity.this, R.drawable.member_icon));
-            exercisesItem.setIcon(AppCompatResources.getDrawable(MainActivity.this, R.drawable.exercises_filled));
-            rulesItem.setIcon(AppCompatResources.getDrawable(MainActivity.this, R.drawable.rulebook_icon));
-        } else if (navigationBar.getSelectedItemId() == R.id.rules) {
-            homeItem.setIcon(AppCompatResources.getDrawable(MainActivity.this, R.drawable.home_icon));
-            membersItem.setIcon(AppCompatResources.getDrawable(MainActivity.this, R.drawable.member_icon));
-            exercisesItem.setIcon(AppCompatResources.getDrawable(MainActivity.this, R.drawable.exercises_icon));
-            rulesItem.setIcon(AppCompatResources.getDrawable(MainActivity.this, R.drawable.rulebook_filled));
         }
     }
 
     private void getContentOfImportedFile(Uri fileUri) {
-        String destination;
-        //Check file type; hhe = exercises, hhr = rules, hhm = members
-        if (getFileExtension(String.valueOf(fileUri)).equals("hhe")) {
-            destination = getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS).toString() + "/" + getString(R.string.app_name) + ".hhe";
-            try {
-                InputStream inputStream = getContentResolver().openInputStream(fileUri);
-                File outputFile = new File(destination);
-                if (inputStream != null) {
-                    FileOutputStream fileOutputStream = new FileOutputStream(outputFile);
-                    byte[] buffer = new byte[1024];
-                    int length;
-                    while ((length = inputStream.read(buffer)) > 0) {
-                        fileOutputStream.write(buffer, 0, length);
-                    }
+        String fileName = getFileName(fileUri);
+        String fileExtension = null;
+        String filePath = getFilePath(fileUri);
 
-                    fileOutputStream.close();
+        if (fileName != null) {
+            fileExtension = getFileExtension(fileName);
+        }
 
-                    //Change file path saved in SP to the new file path (may be redundant, as files in app's storage are always named DocumentsHome Harmony.hhe
-                    exercisesPreference.edit().putString("filePath", outputFile.getAbsolutePath()).apply();
-
-                    StringBuilder fileContent = new StringBuilder();
-
+        if (fileName != null && filePath != null) {
+            switch (fileExtension) {
+                case "hhe":
                     try {
-                        BufferedReader reader = new BufferedReader(new FileReader(outputFile));
+                        StringBuilder fileContentBuilder = new StringBuilder();
+                        InputStreamReader isr = new InputStreamReader(getContentResolver().openInputStream(fileUri));
+                        BufferedReader br = new BufferedReader(isr);
                         String line;
-                        while ((line = reader.readLine()) != null) {
-                            fileContent.append(line);
+
+                        while ((line = br.readLine()) != null) {
+                            fileContentBuilder.append(line).append("\n");
                         }
-                        reader.close();
+
+                        br.close();
+
+                        Gson gson = new Gson();
+                        exercises = gson.fromJson(fileContentBuilder.toString(), new TypeToken<ArrayList<Exercise>>() {
+                        }.getType());
+
+                        saveFileContentE();
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        throw new RuntimeException(e);
                     }
-
-                    exercises = new ArrayList<>();
-                    Gson gson = new Gson();
-                    String jsonString = fileContent.toString();
-                    Type exercisesType = new TypeToken<ArrayList<Exercise>>(){}.getType();
-                    exercises = gson.fromJson(jsonString, exercisesType);
-                    addExercisesToFile(outputFile);
-                }
-                if (inputStream != null) {
-                    inputStream.close();
-                }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        } else if (getFileExtension(String.valueOf(fileUri)).equals("hhr")) {
-            destination = getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS).toString() + "/" + getString(R.string.app_name) + ".hhr";
-            try {
-                InputStream inputStream = getContentResolver().openInputStream(fileUri);
-                File outputFile = new File(destination);
-                if (inputStream != null) {
-                    FileOutputStream fileOutputStream = new FileOutputStream(outputFile);
-                    byte[] buffer = new byte[1024];
-                    int length;
-                    while ((length = inputStream.read(buffer)) > 0) {
-                        fileOutputStream.write(buffer, 0, length);
-                    }
-                    fileOutputStream.close();
-                    rulesPreference.edit().putString("filePath", outputFile.getAbsolutePath()).apply();
-                    StringBuilder fileContent = new StringBuilder();
-
+                    break;
+                case "hhr":
                     try {
-                        BufferedReader reader = new BufferedReader(new FileReader(outputFile));
+                        StringBuilder fileContentBuilder = new StringBuilder();
+                        InputStreamReader isr = new InputStreamReader(getContentResolver().openInputStream(fileUri));
+                        BufferedReader br = new BufferedReader(isr);
                         String line;
-                        while ((line = reader.readLine()) != null) {
-                            fileContent.append(line);
+
+                        while ((line = br.readLine()) != null) {
+                            fileContentBuilder.append(line).append("\n");
                         }
-                        reader.close();
+
+                        br.close();
+
+                        Gson gson = new Gson();
+                        rules = gson.fromJson(fileContentBuilder.toString(), new TypeToken<ArrayList<Rule>>() {
+                        }.getType());
+
+                        saveFileContentR();
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        throw new RuntimeException(e);
                     }
-
-                    rules = new ArrayList<>();
-                    Gson gson = new Gson();
-                    String jsonString = fileContent.toString();
-                    Type rulesType = new TypeToken<ArrayList<Rule>>(){}.getType();
-                    rules = gson.fromJson(jsonString, rulesType);
-                    addRulesToFile(outputFile);
-                }
-                if (inputStream != null) {
-                    inputStream.close();
-                }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        } else if (getFileExtension(String.valueOf(fileUri)).equals("hhm")) {
-            destination = getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS).toString() + "/" + getString(R.string.app_name) + ".hhm";
-            try {
-                InputStream inputStream = getContentResolver().openInputStream(fileUri);
-                File outputFile = new File(destination);
-                if (inputStream != null) {
-                    FileOutputStream fileOutputStream = new FileOutputStream(outputFile);
-                    byte[] buffer = new byte[1024];
-                    int length;
-                    while ((length = inputStream.read(buffer)) > 0) {
-                        fileOutputStream.write(buffer, 0, length);
-                    }
-                    fileOutputStream.close();
-                    membersPreference.edit().putString("filePath", outputFile.getAbsolutePath()).apply();
-                    StringBuilder fileContent = new StringBuilder();
-
+                    break;
+                case "hhm":
                     try {
-                        BufferedReader reader = new BufferedReader(new FileReader(outputFile)); //Fallback: file
+                        StringBuilder fileContentBuilder = new StringBuilder();
+                        InputStreamReader isr = new InputStreamReader(getContentResolver().openInputStream(fileUri));
+                        BufferedReader br = new BufferedReader(isr);
                         String line;
-                        while ((line = reader.readLine()) != null) {
-                            fileContent.append(line);
+
+                        while ((line = br.readLine()) != null) {
+                            fileContentBuilder.append(line).append("\n");
                         }
-                        reader.close();
+
+                        br.close();
+
+                        Gson gson = new Gson();
+                        members = gson.fromJson(fileContentBuilder.toString(), new TypeToken<ArrayList<Member>>() {
+                        }.getType());
+
+                        saveFileContentM();
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        throw new RuntimeException(e);
                     }
-
-                    members = new ArrayList<>();
-                    Gson gson = new Gson();
-                    String jsonString = fileContent.toString();
-                    Type membersType = new TypeToken<ArrayList<Member>>(){}.getType();
-                    members = gson.fromJson(jsonString, membersType);
-                    addMembersToFile(outputFile);
-                }
-                if (inputStream != null) {
-                    inputStream.close();
-                }
-
-                startActivity(new Intent(this, MainActivity.class));
-
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
-    private Uri getIntentData(Intent intent) {
-        if (intent.getData() != null) {
-            return intent.getData();
-        } else {
-            return null;
-        }
-    }
-
-    private void addExercisesToFile(File file) {
-        Gson gson = new Gson();
-        if (exercises.size() != 0) {
-            String jsonString = gson.toJson(exercises);
-            try {
-                FileOutputStream outputStream = new FileOutputStream(file);
-                outputStream.write(jsonString.getBytes());
-                outputStream.close();
-
-                exercisesPreference.edit().putString("filePath", file.getAbsolutePath()).apply();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
-    private void addMembersToFile(File file) {
-        Gson gson = new Gson();
-        if (members.size() != 0) {
-            String jsonString = gson.toJson(members);
-            try {
-                FileOutputStream outputStream = new FileOutputStream(file);
-                outputStream.write(jsonString.getBytes());
-                outputStream.close();
-
-                membersPreference.edit().putString("filePath", file.getAbsolutePath()).apply();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
-
-    private void addRulesToFile(File file) {
-        Gson gson = new Gson();
-        if (rules.size() != 0) {
-            String jsonString = gson.toJson(rules);
-            try {
-                FileOutputStream outputStream = new FileOutputStream(file);
-                outputStream.write(jsonString.getBytes());
-                outputStream.close();
-
-                rulesPreference.edit().putString("filePath", file.getAbsolutePath()).apply();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+                    break;
+                default:
+                    Toast.makeText(this, "Something went wrong. Correct file?", Toast.LENGTH_SHORT).show(); // TODO: 02.07.2023 Add to Strings.xml
+                    break;
             }
         }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.toolbar_menu_wshare, menu);
+        getMenuInflater().inflate(R.menu.toolbar_menu_share, menu);
+        if (menu != null) {
+            MenuItem addItem = menu.findItem(R.id.addItem);
+            addItem.setVisible(false);
+        }
         return true;
     }
 
@@ -354,10 +233,10 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.share) {
 
-            String[] strings = new String[]{
-                    "Exercises",
-                    "Members",
-                    "Rules"
+            String[] extensions = new String[]{
+                    ".hhe",
+                    ".hhm",
+                    ".hhr"
             };
             boolean[] selected = new boolean[] {
                     false,
@@ -366,32 +245,29 @@ public class MainActivity extends AppCompatActivity {
             };
 
             new MaterialAlertDialogBuilder(this, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered)
-                    .setTitle(getString(R.string.share_files_dialog_title))
-                    .setMultiChoiceItems(strings, selected, (dialog, which, isChecked) -> selected[which] = isChecked)
-                    .setPositiveButton(getString(R.string.share), (dialog, which) -> sendFiles(strings, selected))
+                    .setTitle("Share files") // TODO: 02.07.2023 Add to Strings.xml
+                    .setMultiChoiceItems(new String[]{"Exercises", "Members", "Rules"}, selected, (dialog, which, isChecked) -> selected[which] = isChecked)
+                    .setPositiveButton("Share", (dialog, which) -> sendFiles(extensions, selected)) // TODO: 02.07.2023 Add to Strings.xml
                     .show();
             return true;
         } else if (item.getItemId() == R.id.settings) {
-            startActivity(new Intent(MainActivity.this, Settings.class));
+            startActivity(new Intent(MainActivity.this, SettingsActivity.class));
             return true;
         }
         return false;
     }
 
-    public void sendFiles(String[] fileType, boolean[] selected) {
-        //M: MEMBERS, E: EXERCISES, R: RULES
-
+    public void sendFiles(String[] extensions, boolean[] selected) {
         ArrayList<Uri> files = new ArrayList<>();
 
-        for (int i = 0; i < fileType.length; i++) {
-            if(selected[i]){
-                if (getSharedPreferences(fileType[i], 0).getString("filePath", null)!= null) {
-                    File file = new File(getSharedPreferences(fileType[i], 0).getString("filePath", null));
-                    Uri fileUri = FileProvider.getUriForFile(MainActivity.this, BuildConfig.APPLICATION_ID + ".provider", file);
-                    files.add(fileUri);
-                }
-            }
+        for (int i = 0; i < extensions.length; i++) {
 
+            File file = new File(getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS).toString() + "/" + getString(R.string.app_name) + extensions[i]);
+
+            if (selected[i] && file.exists()) {
+                Uri fileUri = FileProvider.getUriForFile(MainActivity.this, BuildConfig.APPLICATION_ID + ".provider", file);
+                files.add(fileUri);
+            }
         }
 
         if (files.size() != 0) {
@@ -404,11 +280,11 @@ public class MainActivity extends AppCompatActivity {
                     grantUriPermission(ri.activityInfo.packageName, files.get(i), Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 }
             }
-            startActivity(Intent.createChooser(share, getString(R.string.share_files_dialog_title)));
+            startActivity(Intent.createChooser(share, "Share files")); // TODO: 02.07.2023 Add to Strings.xml
         }
     }
 
-    private String getFileExtension(String filePath) {
+    public String getFileExtension(String filePath) {
         if (filePath != null && !filePath.isEmpty()) {
             int dotIndex = filePath.lastIndexOf('.');
             if (dotIndex != -1 && dotIndex < filePath.length() - 1) {
@@ -416,5 +292,89 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         return "";
+    }
+
+    public void saveJsonAsFile(String jsonString, String destination) {
+        try {
+            File file = new File(destination);
+
+            FileOutputStream outputStream = new FileOutputStream(file);
+            outputStream.write(jsonString.getBytes());
+            outputStream.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void saveFileContentE() throws IOException {
+        String destination = getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS).toString() + "/" + getString(R.string.app_name) + ".hhe";
+
+        Gson gson = new Gson();
+        String jsonString = gson.toJson(exercises);
+
+        FileOutputStream fos = new FileOutputStream(destination);
+        OutputStreamWriter osw = new OutputStreamWriter(fos);
+        BufferedWriter bw = new BufferedWriter(osw);
+        bw.write(jsonString);
+        bw.close();
+
+        Toast.makeText(this, "Tasks were updated!", Toast.LENGTH_SHORT).show();
+    }
+
+    private void saveFileContentR() throws IOException {
+        String destination = getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS).toString() + "/" + getString(R.string.app_name) + ".hhr";
+
+        Gson gson = new Gson();
+        String jsonString = gson.toJson(rules);
+
+        FileOutputStream fos = new FileOutputStream(destination);
+        OutputStreamWriter osw = new OutputStreamWriter(fos);
+        BufferedWriter bw = new BufferedWriter(osw);
+        bw.write(jsonString);
+        bw.close();
+
+        Toast.makeText(this, "Rules were updated!", Toast.LENGTH_SHORT).show(); // TODO: 02.07.2023 Add to Strings.xml
+    }
+
+    private void saveFileContentM() throws IOException {
+        String destination = getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS).toString() + "/" + getString(R.string.app_name) + ".hhm";
+
+        Gson gson = new Gson();
+        String jsonString = gson.toJson(members);
+
+        FileOutputStream fos = new FileOutputStream(destination);
+        OutputStreamWriter osw = new OutputStreamWriter(fos);
+        BufferedWriter bw = new BufferedWriter(osw);
+        bw.write(jsonString);
+        bw.close();
+
+        Toast.makeText(this, "Members were updated!", Toast.LENGTH_SHORT).show(); // TODO: 02.07.2023 Add to Strings.xml
+    }
+
+    public String getFileName(Uri fileUri) {
+        String name = null;
+        ContentResolver cr = getContentResolver();
+        try (Cursor cursor = cr.query(fileUri, null, null, null, null)) {
+            if (cursor != null && cursor.moveToFirst()) {
+                int nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+                if (nameIndex != -1) {
+                    name = cursor.getString(nameIndex);
+                }
+            }
+        }
+        return name;
+    }
+
+    private String getFilePath(Uri uri) {
+        String path = null;
+        String[] projection = {MediaStore.MediaColumns.DATA};
+        ContentResolver contentResolver = getContentResolver();
+        try (Cursor cursor = contentResolver.query(uri, projection, null, null, null)) {
+            if (cursor != null && cursor.moveToFirst()) {
+                int columnIndex = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
+                path = cursor.getString(columnIndex);
+            }
+        }
+        return path;
     }
 }

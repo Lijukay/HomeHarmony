@@ -10,8 +10,8 @@ android {
         applicationId "com.lijukay.famecrew"
         minSdk 21
         targetSdk 33
-        versionCode 1
-        versionName "Version 0.1 beta"
+        versionCode 5
+        versionName "Version 0.5 beta"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

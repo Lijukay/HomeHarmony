@@ -1,27 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/home"
+        android:id="@+id/homeItem"
         android:enabled="true"
-        android:title="@string/home"
+        android:title="Home"
         android:icon="@drawable/home_icon"/>
     <item
-        android:id="@+id/members"
+        android:id="@+id/memberItem"
         android:enabled="true"
-        android:title="@string/members"
+        android:title="Members"
         android:icon="@drawable/member_icon"/>
     <item
-        android:id="@+id/exercises"
+        android:id="@+id/taskItem"
         android:enabled="true"
-        android:title="@string/exercises"
+        android:title="Tasks"
         android:icon="@drawable/exercises_icon"/>
     <item
-        android:id="@+id/rules"
+        android:id="@+id/rulesItem"
         android:enabled="true"
-        android:title="@string/rules"
+        android:title="Rules"
         android:icon="@drawable/rulebook_icon"/>
 
 

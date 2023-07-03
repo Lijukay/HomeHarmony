@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activity.OpenFileActivity">
+    tools:context=".activity.StartActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/titleBar"
@@ -13,21 +13,106 @@
         style="@style/Widget.Material3.AppBarLayout">
 
         <com.google.android.material.appbar.MaterialToolbar
+            app:title="Welcome..."
             android:id="@+id/materialToolbar"
             style="@style/Widget.Material3.Toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:title="@string/createFileOrChoose"
-            app:titleCentered="true"/>
+            android:layout_height="wrap_content"/>
     </com.google.android.material.appbar.AppBarLayout>
 
-    <FrameLayout
-        android:id="@+id/fragmentHolder"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@+id/buttonLayout"
-        android:layout_below="@+id/titleBar"/>
 
+    <androidx.core.widget.NestedScrollView
+        android:layout_below="@id/titleBar"
+        android:layout_above="@id/buttonLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                style="@style/Widget.Material3.CardView.Elevated">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="16dp"
+                    android:orientation="vertical"
+                    style="@style/Widget.Material3.CardView.Elevated">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="…to Home Harmony. An application for you to order the household. Before we can start, perhaps you already have files, you want to implement. How about you do that then. If not, feel free to click the start button. Quick info: Down below, you can find informations about the app's permissions and how I use them."/>
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                style="@style/Widget.Material3.CardView.Elevated">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="16dp"
+                    android:orientation="vertical"
+                    style="@style/Widget.Material3.CardView.Elevated">
+
+                    <TextView
+                        android:layout_marginTop="8dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="View network connections &amp; and have full network access"/>
+
+                    <TextView
+                        android:layout_marginTop="8dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="In order to only check for Updates, when connected to WiFi, the App needs to view network connections. It only checks, what kind of connection is used. The application needs to have full network access to get the update file from GitHub-Release."/>
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                style="@style/Widget.Material3.CardView.Elevated">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="16dp"
+                    android:orientation="vertical"
+                    style="@style/Widget.Material3.CardView.Elevated">
+
+                    <TextView
+                        android:layout_marginTop="8dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="Download apps from unknow sources"/>
+
+                    <TextView
+                        android:layout_marginTop="8dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="In order to install the app update, the application needs the permission to install apps from unknown sources."/>
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
     <RelativeLayout
         android:id="@+id/buttonLayout"
         android:layout_width="match_parent"
@@ -37,19 +122,11 @@
         android:padding="16dp">
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/cancelChoose"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:text="@string/choose_file"
-            style="@style/Widget.Material3.Button.TextButton"/>
-
-        <com.google.android.material.button.MaterialButton
             android:id="@+id/createNext"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
-            android:text="@string/create_new_file" />
+            android:text="Start" />
 
     </RelativeLayout>
 </RelativeLayout>

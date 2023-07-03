@@ -8,10 +8,12 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.lijukay.famecrew.R;
 import com.lijukay.famecrew.interfaces.OnClickInterface;
+import com.lijukay.famecrew.interfaces.OnLongClickInterface;
 import com.lijukay.famecrew.objects.Member;
 
 import java.util.ArrayList;
@@ -21,18 +23,20 @@ public class MembersAdapter extends RecyclerView.Adapter<MembersAdapter.ViewHold
     private final Context context;
     public ArrayList<Member> members;
     public OnClickInterface onClickInterface;
+    public OnLongClickInterface onLongClickInterface;
 
-    public MembersAdapter(Context context, ArrayList<Member> members, OnClickInterface onClickInterface){
+    public MembersAdapter(Context context, ArrayList<Member> members, OnClickInterface onClickInterface, OnLongClickInterface onLongClickInterface){
         this.context = context;
         this.members = members;
         this.onClickInterface = onClickInterface;
+        this.onLongClickInterface = onLongClickInterface;
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(context).inflate(R.layout.object_item, parent, false);
-        return new ViewHolder(v, onClickInterface);
+        View v = LayoutInflater.from(context).inflate(R.layout.item_card_members, parent, false);
+        return new ViewHolder(v, onClickInterface, onLongClickInterface);
     }
 
     @SuppressLint("SetTextI18n")
@@ -43,7 +47,8 @@ public class MembersAdapter extends RecyclerView.Adapter<MembersAdapter.ViewHold
         String prename = currentItem.getPrename();
         String nickname = currentItem.getNickname();
 
-        holder.member.setText(prename + " " + " (" + nickname + ")");
+        holder.member.setText(prename);
+        holder.nickname.setText(nickname);
     }
 
     @Override
@@ -51,22 +56,44 @@ public class MembersAdapter extends RecyclerView.Adapter<MembersAdapter.ViewHold
         return members.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder{
+    @SuppressLint("NotifyDataSetChanged")
+    public void updateData(ArrayList<Member> members) {
+        this.members = members;
+        notifyDataSetChanged();
+    }
+
+    public static class ViewHolder extends RecyclerView.ViewHolder {
         private final TextView member;
+        private final TextView nickname;
 
-        public ViewHolder(@NonNull View itemView, OnClickInterface onClickInterface) {
+        public ViewHolder(@NonNull View itemView, OnClickInterface onClickInterface, OnLongClickInterface onLongClickInterface) {
             super(itemView);
-            member = itemView.findViewById(R.id.objectTextHolder);
+            CardView membersCardViewHolder = itemView.findViewById(R.id.membersHolderCard);
+            member = itemView.findViewById(R.id.membersPrename);
+            nickname = itemView.findViewById(R.id.membersNickname);
 
-            member.setOnClickListener(v -> {
+            membersCardViewHolder.setOnClickListener(v -> {
                 if (onClickInterface != null){
                     int position = getAdapterPosition();
 
                     if (position != RecyclerView.NO_POSITION){
-                        onClickInterface.onItemClick(position);
+                        onClickInterface.onItemClick(position, "card");
                     }
                 }
             });
+
+            membersCardViewHolder.setOnLongClickListener(v -> {
+                if (onLongClickInterface != null) {
+                    int position = getAdapterPosition();
+
+                    if (position != RecyclerView.NO_POSITION) {
+                        onLongClickInterface.onLongClick(position);
+                    }
+                }
+
+                return false;
+            });
+
         }
     }
 }
