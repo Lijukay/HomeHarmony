@@ -9,7 +9,7 @@
     <string name="log_message_what_went_wrong">Log message - What went wrong</string>
     <string name="log_message_detailed_message">Log Message - Detailed Message</string>
     <string name="copy_logs">Copy Logs</string>
-    <string name="send_logs">Send logs</string>
+    <string name="send_logs">Share logs</string>
 
     <!--Main activity-->
     <string name="home">Home</string>
@@ -27,10 +27,9 @@
     <string name="app_update">Home Harmony Update</string>
     <string name="update_available">Update available</string>
     <string name="no_update_available">No update available</string>
-    <string name="updater_title_beta">%1$s -> %2$s</string>
-    <string name="update">Update</string>
+    <string name="update" translatable="false">Update</string>
     <string name="later">Later</string>
-    <string name="updater_title">%1$s -> %2$s</string>
+    <string name="updater_title" translatable="false">%1$s -> %2$s</string>
     <string name="settings">Settings</string>
 
     <!--Subtask activity-->
@@ -40,48 +39,48 @@
     <string name="nothing_to_add">Nothing to add</string>
     <string name="name_required">Name required</string>
     <string name="same_task_exists">Task with the same name exists</string>
-    <string name="create_task_dialog_message">You can create a new file yourself by clicking on "Add task" and open a file, that includes tasks by clicking on "From file". Please be aware that as for now, if you import a file, your current tasks will get deleted.</string>
+    <string name="create_task_dialog_message">Create a new task by clicking on \"New task\" or import tasks by using \"From file\". Please be aware that as for now, if you import a file, your current tasks will get deleted.</string>
     <string name="add">Add</string>
     <string name="new_task">New task</string>
     <string name="from_file">From file</string>
     <string name="task_done">Task done!</string>
     <string name="task_done_message">This task is labeled as finished by %1$s (%2$s).</string>
-    <string name="okay">Okay</string>
+    <string name="okay" translatable="false">Okay</string>
     <string name="member_does_not_exist">Task undone: Member does not exist</string>
     <string name="count_of_done_tasks">You have finished %1$d of %2$d of your exercises</string>
     <string name="cannot_use_feature_tasks">This can\'t be used as it seems like there are no tasks</string>
-    <string name="cannot_use_feature_user">This can\'t be used as it seems like there are no users</string>
+    <string name="cannot_use_feature_user">This can\'t be used as it seems like there is no user selected</string>
 
     <!--Task dialog-->
-    <string name="label_task_as_voluntary">Label task as voluntary</string>
+    <string name="label_task_as_voluntary">Label task as voluntary/without a set member</string>
     <string name="nickname_of_member">Nickname of member</string>
-    <string name="manage_subtasks_information">To manage subtasks (f.e. delete them or add extra information), you have to visit the task\'s page, by clicking on the task.</string>
+    <string name="manage_subtasks_information">To manage subtasks (f.e. delete them or add extra information), you have to visit the task\'s page. You can get there by clicking on the task.</string>
     <string name="add_subtask">Add subtask</string>
 
 
     <!--Members fragment-->
     <string name="nickname_exists">Nickname already exists</string>
     <string name="name_and_nickname_required">Name and nickname required</string>
-    <string name="create_member_dialog_message">Create a file using "New member" or import a file using "From file". Please be aware that as for now, if you import a file, your current members will get deleted.</string>
+    <string name="create_member_dialog_message">Create a new member by clicking on \"New member\" or import members by using \"From file\". Please be aware that as for now, if you import a file, your current members will get deleted.</string>
     <string name="new_member">New member</string>
     <string name="prename">Prename</string>
     <string name="nickname">Nickname</string>
 
     <!--Rules fragment-->
     <string name="must_include_t_and_r">Rule must have a title and a rule</string>
-    <string name="create_rule_dialog_message">Create a file using "New rule" or import a file using "From file". Please be aware that as for now, if you import a file, your current rules will get deleted.</string>
+    <string name="create_rule_dialog_message">Create a new rule by clicking on \"New rule\" or import rules by using \"From file\". Please be aware that as for now, if you import a file, your current rules will get deleted.</string>
     <string name="new_rule">New rule</string>
     <string name="title">Title</string>
     <string name="rule">Rule</string>
 
     <!--Open file activity-->
     <string name="welcome">Welcome&#8230;</string>
-    <string name="welcome_message">&#8230;to Home Harmony. An application for you to order the household. Before we can start, perhaps you already have files, you want to implement. How about you do that then. If not, feel free to click the start button. Quick info: Down below, you can find informations about the app\'s permissions and how I use them.</string>
-    <string name="permission_internet"><![CDATA[View network connections & and have full network access]]></string>
+    <string name="welcome_message">&#8230;to Home Harmony. An application for you to order the household.\n\nQuick info: Down below, you can find informations about the app\'s permissions and how I use them.</string>
+    <string name="permission_internet">View network connections &amp; and have full network access></string>
     <string name="permission_internet_message">In order to only check for Updates, when connected to WiFi, the App needs to view network connections. It only checks, what kind of connection is used. The application needs to have full network access to get the update file from GitHub-Release.</string>
     <string name="permission_unknown_sources">Download apps from unknow sources</string>
     <string name="permission_unknown_packages_message">In order to install the app update, the application needs the permission to install apps from unknown sources.</string>
-    <string name="start">Start</string>
+    <string name="start" translatable="false">Start</string>
 
     <!--Subtask dialog-->
     <string name="subtask">Subtask</string>
