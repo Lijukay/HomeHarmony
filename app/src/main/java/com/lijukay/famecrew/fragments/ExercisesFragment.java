@@ -397,9 +397,7 @@ public class ExercisesFragment extends Fragment implements OnClickInterface, OnL
                 doneMember.setVisibility(isChecked ? View.VISIBLE : View.GONE);
             });
 
-        voluntary.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            membersNickname.setVisibility(isChecked ? View.GONE : View.VISIBLE);
-        });
+        voluntary.setOnCheckedChangeListener((buttonView, isChecked) -> membersNickname.setVisibility(isChecked ? View.GONE : View.VISIBLE));
 
         Exercise exercise = exercises.get(position);
         Objects.requireNonNull(exerciseName.getEditText()).setText(exercise.getExName());
