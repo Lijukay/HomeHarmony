@@ -46,9 +46,7 @@ public class LogActivity extends AppCompatActivity {
             String logTextDetailed = intent.getStringExtra("logs_detailed") == null ? "No logs" : intent.getStringExtra("logs_detailed");
 
             TextView nonDetailedLogsTextView = findViewById(R.id.error_text_non_detailed);
-            nonDetailedLogsTextView.setText("There was an error with this application: " + logText);
-            //There was an error with this application: %1$s
-            //nonDetailedLogsTextView.setText(getString(R.string.stringName, logText));
+            nonDetailedLogsTextView.setText(getString(R.string.app_error, logText));
 
             findViewById(R.id.copy_logs_button).setOnClickListener(v -> copyText(logText));
             findViewById(R.id.send_logs_button).setOnClickListener(v -> sendFile());
@@ -62,8 +60,7 @@ public class LogActivity extends AppCompatActivity {
         ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
         ClipData clip = ClipData.newPlainText("ErrorLogs", logs);
         clipboard.setPrimaryClip(clip);
-        Toast.makeText(this, "Logs have been copied to the clipboard", Toast.LENGTH_SHORT).show();
-        //Toast.makeText(this, getString(R.string.stringName), Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, getString(R.string.copied_logs), Toast.LENGTH_SHORT).show();
     }
 
     public void sendFile() {
@@ -83,8 +80,7 @@ public class LogActivity extends AppCompatActivity {
                 grantUriPermission(ri.activityInfo.packageName, fileUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
             }
 
-            startActivity(Intent.createChooser(share, "Share files"));
-            //startActivity(Intent.createChooser(share, getString(R.string.share_files_dialog_title)));
+            startActivity(Intent.createChooser(share, getString(R.string.share_files)));
         }
     }
 }

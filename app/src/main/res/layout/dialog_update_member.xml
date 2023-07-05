@@ -13,7 +13,7 @@
             android:id="@+id/title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Update member"
+            android:text="@string/update_member"
             android:textAppearance="?attr/textAppearanceTitleLarge"
             android:textColor="?android:attr/textColorSecondary" />
 
@@ -32,7 +32,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="In order to guarantee the functionality of the application, you can only edit the user's prename"
+                    android:text="@string/information_prename"
                     android:textColor="?attr/colorOnError"/>
 
             </LinearLayout>
@@ -53,7 +53,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:hint="Prename">
+            android:hint="@string/prename">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
@@ -72,7 +72,7 @@
                 android:layout_margin="8dp"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="Delete"
+                android:text="@string/delete"
                 android:backgroundTint="?attr/colorError"
                 android:id="@+id/buttonDelete"/>
 
@@ -81,7 +81,7 @@
                 android:layout_margin="8dp"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="Update"
+                android:text="@string/update"
                 android:id="@+id/buttonUpdate"/>
         </GridLayout>
 

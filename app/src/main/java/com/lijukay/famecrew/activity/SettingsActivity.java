@@ -97,7 +97,7 @@ public class SettingsActivity extends AppCompatActivity {
             if (connected) {
                 parseJSONVersion();
             } else {
-                updater.setSummary("You are not connected to the Internet."); // TODO: 02.07.2023 Add to Strings.xml
+                updater.setSummary(getString(R.string.no_connection));
             }
 
             updater.setOnPreferenceClickListener(preference -> {
@@ -152,7 +152,7 @@ public class SettingsActivity extends AppCompatActivity {
             DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
 
             request.setMimeType("application/vnd.android.package-archive");
-            request.setTitle(context.getString(R.string.app_name) + " Update"); // TODO: 02.07.2023 Add to Strings.xml
+            request.setTitle(context.getString(R.string.app_update));
             request.setDescription(versionName);
             request.setDestinationUri(fileUri);
 
@@ -199,13 +199,13 @@ public class SettingsActivity extends AppCompatActivity {
                     }
 
                     if (updater != null && versionsCodeBeta > versionC && wantsBeta) {
-                        updater.setSummary("Update available"); // TODO: 02.07.2023 Add to Strings.xml
+                        updater.setSummary(getString(R.string.update_available));
                         updater.setEnabled(true);
                     }else  if (updater != null && versionsCode <= versionC) {
-                        updater.setSummary("No update available"); // TODO: 02.07.2023 Add to Strings.xml
+                        updater.setSummary(getString(R.string.no_update_available));
                         updater.setEnabled(false);
                     }  else if(updater != null) {
-                        updater.setSummary("Update available"); // TODO: 02.07.2023 Add to Strings.xml
+                        updater.setSummary(getString(R.string.update_available));
                         updater.setEnabled(true);
                     }
                 } catch (JSONException e) {
@@ -263,17 +263,17 @@ public class SettingsActivity extends AppCompatActivity {
 
                     if (finalVersionsCodeBeta > versionC && settingsPreferences.getBoolean("wantsBeta", false)) {
                         new MaterialAlertDialogBuilder(requireContext(), com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered)
-                                .setTitle(BuildConfig.VERSION_NAME + "->" + finalVersionsNameBeta1)
+                                .setTitle(getString(R.string.updater_title_beta, BuildConfig.VERSION_NAME, finalVersionsNameBeta1))
                                 .setMessage(finalChangelogBeta1)
-                                .setPositiveButton("Update", (dialog, which) -> InstallUpdate(requireContext(), finalApkUrlBeta1, finalVersionsNameBeta1)) // TODO: 02.07.2023 Add to Strings.xml
-                                .setNeutralButton("Later", (dialog, which) -> dialog.cancel()) // TODO: 02.07.2023 Add to Strings.xml
+                                .setPositiveButton(getString(R.string.update), (dialog, which) -> InstallUpdate(requireContext(), finalApkUrlBeta1, finalVersionsNameBeta1))
+                                .setNeutralButton(getString(R.string.later), (dialog, which) -> dialog.cancel())
                                 .show();
                         } else if(finalVersionsCode > versionC) {
                             new MaterialAlertDialogBuilder(requireContext(), com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered)
-                                    .setTitle(BuildConfig.VERSION_NAME + "->" + finalVersionsName1)
+                                    .setTitle(getString(R.string.updater_title, BuildConfig.VERSION_NAME, finalVersionsName1))
                                     .setMessage(finalChangelog1)
-                                    .setPositiveButton("Update", (dialog, which) -> InstallUpdate(requireContext(), finalApkUrl1, finalVersionsName1)) // TODO: 02.07.2023 Add to Strings.xml
-                                    .setNeutralButton("Later", (dialog, which) -> dialog.cancel()) // TODO: 02.07.2023 Add to Strings.xml
+                                    .setPositiveButton(getString(R.string.update), (dialog, which) -> InstallUpdate(requireContext(), finalApkUrl1, finalVersionsName1))
+                                    .setNeutralButton(getString(R.string.later), (dialog, which) -> dialog.cancel())
                                     .show();
                         }
 

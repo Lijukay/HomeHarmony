@@ -57,8 +57,6 @@ public class RulesFragment extends Fragment implements OnLongClickInterface {
 
     private ArrayList<Rule> rules;
     private RulesAdapter rulesAdapter;
-    private SharedPreferences rulesPreference;
-    boolean firstStartFragment;
     private String rulesFilePath;
 
     public RulesFragment() {
@@ -77,13 +75,8 @@ public class RulesFragment extends Fragment implements OnLongClickInterface {
 
         View v = inflater.inflate(R.layout.fragment_rules_overview, container, false);
 
-        rulesPreference = requireContext().getSharedPreferences("Rules", 0);
-        firstStartFragment = rulesPreference.getBoolean("firstStart", true);
-
         RecyclerView rulesRV = v.findViewById(R.id.rulesRV);
         rulesRV.setLayoutManager(new LinearLayoutManager(requireContext().getApplicationContext()));
-
-        showFirstStartDialogIfNeeded();
 
         rules = new ArrayList<>();
 
@@ -104,17 +97,6 @@ public class RulesFragment extends Fragment implements OnLongClickInterface {
         return v;
     }
 
-    private void showFirstStartDialogIfNeeded() {
-        if (rulesPreference.getBoolean("firstStart", true)) {
-            new MaterialAlertDialogBuilder(requireContext(), com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered)
-                    .setTitle("Tutorial for Rules")
-                    .setMessage("Rulebook include rules but since you have not created a rule, there is no file yet. To create a rule, simply press on \"Add rule\" and choose whether you like to create a new rule or to add rules from a file.")
-                    .setPositiveButton("Okay", (dialog, which) -> dialog.cancel())
-                    .setOnCancelListener(dialog -> rulesPreference.edit().putBoolean("firstStart", false).apply())
-                    .show();
-        }
-    }
-
     @SuppressLint("NotifyDataSetChanged")
     private void addNewRule() {
         BottomSheetDialog dialog = new BottomSheetDialog(requireContext());
@@ -130,7 +112,7 @@ public class RulesFragment extends Fragment implements OnLongClickInterface {
             String ruleMessage = Objects.requireNonNull(ruleMessageEditText.getEditText()).getText().toString().trim();
 
             if (TextUtils.isEmpty(ruleTitle) || TextUtils.isEmpty(ruleMessage)) {
-                Toast.makeText(requireContext(), "Rule must include title and message", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), getString(R.string.must_include_t_and_r), Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -224,7 +206,7 @@ public class RulesFragment extends Fragment implements OnLongClickInterface {
                     rulesAdapter.updateData(rules);
                     saveFileContent();
                 } else {
-                    Toast.makeText(requireContext(), "Unable to read file", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), getString(R.string.invalid_file), Toast.LENGTH_SHORT).show();
                 }
 
 
@@ -234,20 +216,8 @@ public class RulesFragment extends Fragment implements OnLongClickInterface {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        } else if (result != null) {
-            if (((MainActivity) requireActivity()).getFileExtension(result.toString()).equals("hhe") || ((MainActivity) requireActivity()).getFileExtension(result.toString()).equals("hhm")) {
-                new MaterialAlertDialogBuilder(requireContext(), com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered)
-                        .setTitle("File extension not right")
-                        .setMessage("This is a Home Harmony-file extension but it is not the correct extension for rules. Please use a file, which extension is .hhr.")
-                        .setPositiveButton("Okay", (dialog, which) -> dialog.cancel())
-                        .show();
-            } else {
-                new MaterialAlertDialogBuilder(requireContext(), com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered)
-                        .setTitle("File extension not supported")
-                        .setMessage("This is not a Home Harmony file. Please select a file, which extension is .hhe.")
-                        .setPositiveButton("Okay", ((dialog, which) -> dialog.cancel()))
-                        .show();
-            }
+        } else  {
+            Toast.makeText(requireContext(), getString(R.string.invalid_file), Toast.LENGTH_SHORT).show();
         }
     });
     
@@ -261,10 +231,10 @@ public class RulesFragment extends Fragment implements OnLongClickInterface {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.addItem) {
             new MaterialAlertDialogBuilder(requireContext(), com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered)
-                    .setTitle("Choose from file or make own?")
-                    .setMessage("If you have a file, that contains rules, feel free to implement it. Your current rules will get deleted.")
-                    .setPositiveButton("New Rule", (dialog, which) -> addNewRule())
-                    .setNeutralButton("Open from file", (dialog, which) -> mGetContent.launch("application/octet-stream"))
+                    .setTitle(getString(R.string.rules))
+                    .setMessage(getString(R.string.create_rule_dialog_message))
+                    .setPositiveButton(getString(R.string.new_rule), (dialog, which) -> addNewRule())
+                    .setNeutralButton(getString(R.string.from_file), (dialog, which) -> mGetContent.launch("application/octet-stream"))
                     .show();
         }
         return false;
@@ -288,7 +258,7 @@ public class RulesFragment extends Fragment implements OnLongClickInterface {
             String newRulesRule = Objects.requireNonNull(rulesRule.getEditText()).getText().toString().trim();
 
             if (TextUtils.isEmpty(newTitle)) {
-                Toast.makeText(requireContext(), "Rule must include title and message", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), getString(R.string.must_include_t_and_r), Toast.LENGTH_SHORT).show();
                 return;
             }
 

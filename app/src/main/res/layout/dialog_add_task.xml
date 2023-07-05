@@ -19,7 +19,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="New task"
+            android:text="@string/new_task"
             android:textAppearance="?attr/textAppearanceTitleLarge"
             android:textColor="?android:attr/textColorSecondary" />
 
@@ -28,7 +28,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:hint="Title">
+            android:hint="@string/title">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
@@ -42,13 +42,13 @@
             android:layout_marginTop="24dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Label task as voluntary"/>
+            android:text="@string/label_task_as_voluntary"/>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/memberTF"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Nickname of member"
+            android:hint="@string/nickname_of_member"
             style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -60,7 +60,7 @@
             android:layout_marginTop="24dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="To manage subtasks (f.e. delete them or add extra information), you have to visit the task's page, by clicking on the task."
+            android:text="@string/manage_subtasks_information"
             android:textAppearance="?attr/textAppearanceBodyMedium"
             android:textColor="?android:attr/textColorSecondary"/>
 
@@ -76,7 +76,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_alignParentEnd="true"
-                android:text="Add subtask" />
+                android:text="@string/add_subtask" />
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/subtasks"
@@ -84,7 +84,7 @@
                 android:layout_height="48dp"
                 android:layout_alignParentTop="true"
                 android:layout_toStartOf="@id/addToSubtasks"
-                android:hint="Subtask" />
+                android:hint="@string/subtask" />
 
         </RelativeLayout>
 
@@ -110,7 +110,7 @@
             android:layout_marginTop="24dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Add"
+            android:text="@string/add"
             android:id="@+id/buttonAdd"/>
     </LinearLayout>
 

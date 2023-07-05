@@ -63,7 +63,6 @@ public class ExercisesFragment extends Fragment implements OnClickInterface, OnL
 
     private ExerciseAdapter exerciseAdapter;
     private ArrayList<Exercise> exercises;
-    private SharedPreferences exercisesPreference;
     private String DESTINATION_FILE;
     private String DESTINATION_MEMBERS_FILE;
     private int dayOfMonth, month, year;
@@ -85,8 +84,6 @@ public class ExercisesFragment extends Fragment implements OnClickInterface, OnL
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_exercises, container, false);
 
-        exercisesPreference = requireContext().getSharedPreferences("Exercises", 0);
-
         Calendar calendar = Calendar.getInstance();
         dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
         month = calendar.get(Calendar.MONTH);
@@ -94,8 +91,6 @@ public class ExercisesFragment extends Fragment implements OnClickInterface, OnL
 
         RecyclerView recyclerView = v.findViewById(R.id.exercisesRV);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-
-        showFirstStartDialogIfNeeded();
 
         exercises = new ArrayList<>();
 
@@ -144,19 +139,7 @@ public class ExercisesFragment extends Fragment implements OnClickInterface, OnL
                 exercises.set(exercises.indexOf(exercise), new Exercise(exercise.getExName(), exercise.getMember(), false, 0, 0, 0, null, exercise.isVoluntary(), exercise.getSubtasks()));
             }
         }
-
         saveFileContent();
-    }
-
-    private void showFirstStartDialogIfNeeded() {
-        if (exercisesPreference.getBoolean("firstStart", true)) {
-            new MaterialAlertDialogBuilder(requireContext(), com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered)
-                    .setTitle("Tutorial for tasks")
-                    .setMessage("Tasks include exercises but since you have not created a task, there is no file yet. To create a task, simply press on \"Add task\" and choose whether you like to create a new task or to add tasks from a file. Then, a task will be created.")
-                    .setPositiveButton("Okay", (dialog, which) -> dialog.cancel())
-                    .setOnCancelListener(dialog -> exercisesPreference.edit().putBoolean("firstStart", false).apply())
-                    .show();
-        }
     }
 
     private void addNewExercise() {
@@ -191,19 +174,19 @@ public class ExercisesFragment extends Fragment implements OnClickInterface, OnL
                 subtasksAdapter.updateData(subtasks);
                 editText.setText("");
             } else {
-                Toast.makeText(requireContext(), "Nothing to add", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), getString(R.string.nothing_to_add), Toast.LENGTH_SHORT).show();
             }
         });
 
         v.findViewById(R.id.buttonAdd).setOnClickListener(v1 -> {
             String name = Objects.requireNonNull(exerciseName.getEditText()).getText().toString().trim();
             if (TextUtils.isEmpty(name)) {
-                Toast.makeText(requireContext(), "Task name required", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), getString(R.string.name_required), Toast.LENGTH_SHORT).show();
                 return;
             }
             for (Exercise exercise : exercises) {
                 if (exercise.getExName().toLowerCase(Locale.ROOT).equals(name.toLowerCase(Locale.ROOT))) {
-                    Toast.makeText(requireContext(), "Task with the same name exists", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), getString(R.string.same_task_exists), Toast.LENGTH_SHORT).show();
                     return;
                 }
             }
@@ -345,7 +328,7 @@ public class ExercisesFragment extends Fragment implements OnClickInterface, OnL
                     exerciseAdapter.updateData(exercises);
                     saveFileContent();
                 } else {
-                    Toast.makeText(requireContext(), "Unable to read file", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), getString(R.string.invalid_file), Toast.LENGTH_SHORT).show();
                 }
 
                 if (inputStream != null) {
@@ -354,20 +337,8 @@ public class ExercisesFragment extends Fragment implements OnClickInterface, OnL
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        } else if (result != null) {
-            if (((MainActivity) requireActivity()).getFileExtension(result.toString()).equals("hhr") || ((MainActivity) requireActivity()).getFileExtension(result.toString()).equals("hhm")) {
-                new MaterialAlertDialogBuilder(requireContext(), com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered)
-                        .setTitle("Wrong file extension")
-                        .setMessage("This is a Home Harmony-file extension but it is not the correct extension for tasks. Please use a file, which extension is .hhe.")
-                        .setPositiveButton("Okay", (dialog, which) -> dialog.cancel())
-                        .show();
-            } else if (!result.toString().endsWith("hhr") && !result.toString().endsWith("hhe") && !result.toString().endsWith("hhm")) {
-                new MaterialAlertDialogBuilder(requireContext(), com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered)
-                        .setTitle("Unsupported file extension")
-                        .setMessage("This is not a Home Harmony file. Please select a file, which extension ends with hhe.")
-                        .setPositiveButton("Okay", (dialog, which) -> dialog.cancel())
-                        .show();
-            }
+        } else {
+            Toast.makeText(requireContext(), getString(R.string.invalid_file), Toast.LENGTH_SHORT).show();
         }
     });
 
@@ -382,10 +353,10 @@ public class ExercisesFragment extends Fragment implements OnClickInterface, OnL
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.addItem) {
             new MaterialAlertDialogBuilder(requireContext(), com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered)
-                    .setTitle("Tasks")
-                    .setMessage("You can create a new file yourself by clicking on \"Add task\" and open a file, that includes tasks, by clicking on \"From File\".")
-                    .setPositiveButton("Add task", (dialog, which) -> addNewExercise())
-                    .setNeutralButton("From file", (dialog, which) -> mGetContent.launch("application/octet-stream"))
+                    .setTitle(getString(R.string.tasks))
+                    .setMessage(getString(R.string.create_task_dialog_message))
+                    .setPositiveButton(getString(R.string.new_task), (dialog, which) -> addNewExercise())
+                    .setNeutralButton(getString(R.string.from_file), (dialog, which) -> mGetContent.launch("application/octet-stream"))
                     .show();
             return true;
         }
@@ -399,9 +370,9 @@ public class ExercisesFragment extends Fragment implements OnClickInterface, OnL
             Member doneByMember = exercise.getDoneByMember();
             if (doneByMember != null) {
                 new MaterialAlertDialogBuilder(requireContext(), com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered)
-                        .setTitle("Task done!")
-                        .setMessage("This task is labeled as finished by " + doneByMember.getPrename() + " (" + doneByMember.getNickname() + ").")
-                        .setPositiveButton("Okay", (dialog, which) -> dialog.cancel())
+                        .setTitle(getString(R.string.task_done))
+                        .setMessage(getString(R.string.task_done_message, doneByMember.getPrename(), doneByMember.getNickname()))
+                        .setPositiveButton(getString(R.string.okay), (dialog, which) -> dialog.cancel())
                         .show();
             }
         } else {
@@ -459,12 +430,12 @@ public class ExercisesFragment extends Fragment implements OnClickInterface, OnL
             String newDoneByNickname = Objects.requireNonNull(doneMember.getEditText()).getText().toString().trim();
 
             if (TextUtils.isEmpty(newName)) {
-                Toast.makeText(requireContext(), "Task name required", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), getString(R.string.name_required), Toast.LENGTH_SHORT).show();
                 return;
             }
             for (int i = 0; i < exercises.size(); i++) {
                 if (exercises.get(i).getExName().toLowerCase(Locale.ROOT).equals(newName.toLowerCase(Locale.ROOT)) && i != position) {
-                    Toast.makeText(requireContext(), "Task with the same name exists", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), getString(R.string.same_task_exists), Toast.LENGTH_SHORT).show();
                     return;
                 }
             }
@@ -486,17 +457,17 @@ public class ExercisesFragment extends Fragment implements OnClickInterface, OnL
             if (voluntary.isChecked()) {
                 if (newIsDone && newDoneByMember == null) {
                     newIsDone = false;
-                    Toast.makeText(requireContext(), "Task undone: Member does not exist", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), getString(R.string.member_does_not_exist), Toast.LENGTH_SHORT).show();
                 }
                 exercises.set(position, new Exercise(newName, null, newIsDone, dayOfMonth, month, year, newDoneByMember, true, exercise.getSubtasks()));
             } else {
                 if (newIsDone && newDoneByMember == null) {
                     newIsDone = false;
-                    Toast.makeText(requireContext(), "Task undone: Member does not exist", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), getString(R.string.member_does_not_exist), Toast.LENGTH_SHORT).show();
                 }
                 if (newMember == null) {
                     voluntary.setChecked(true);
-                    Toast.makeText(requireContext(), "Task undone: Member does not exist", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), getString(R.string.member_does_not_exist), Toast.LENGTH_SHORT).show();
                 }
                 exercises.set(position, new Exercise(newName, newMember, newIsDone, dayOfMonth, month, year, newDoneByMember, voluntary.isChecked(), exercise.getSubtasks()));
             }

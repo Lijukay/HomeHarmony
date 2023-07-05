@@ -13,7 +13,7 @@
         style="@style/Widget.Material3.AppBarLayout">
 
         <com.google.android.material.appbar.MaterialToolbar
-            app:title="Welcome..."
+            app:title="@string/welcome"
             android:id="@+id/materialToolbar"
             style="@style/Widget.Material3.Toolbar"
             android:layout_width="match_parent"
@@ -48,7 +48,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:text="…to Home Harmony. An application for you to order the household. Before we can start, perhaps you already have files, you want to implement. How about you do that then. If not, feel free to click the start button. Quick info: Down below, you can find informations about the app's permissions and how I use them."/>
+                        android:text="@string/welcome_message"/>
 
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
@@ -70,13 +70,13 @@
                         android:layout_marginTop="8dp"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:text="View network connections &amp; and have full network access"/>
+                        android:text="@string/permission_internet"/>
 
                     <TextView
                         android:layout_marginTop="8dp"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:text="In order to only check for Updates, when connected to WiFi, the App needs to view network connections. It only checks, what kind of connection is used. The application needs to have full network access to get the update file from GitHub-Release."/>
+                        android:text="@string/permission_internet_message"/>
 
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
@@ -98,13 +98,13 @@
                         android:layout_marginTop="8dp"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:text="Download apps from unknow sources"/>
+                        android:text="@string/permission_unknown_sources"/>
 
                     <TextView
                         android:layout_marginTop="8dp"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:text="In order to install the app update, the application needs the permission to install apps from unknown sources."/>
+                        android:text="@string/permission_unknown_packages_message"/>
 
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
@@ -126,7 +126,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
-            android:text="Start" />
+            android:text="@string/start" />
 
     </RelativeLayout>
 </RelativeLayout>

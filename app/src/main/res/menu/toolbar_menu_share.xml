@@ -2,17 +2,17 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:title="Add"
+        android:title="@string/add"
         android:id="@+id/addItem"
         app:showAsAction="ifRoom"
         android:icon="@drawable/add_icon"/>
     <item
-        android:title="Share"
+        android:title="@string/share"
         android:id="@+id/share"
         app:showAsAction="ifRoom"
         android:icon="@drawable/share_icon"/>
     <item
-        android:title="Settings"
+        android:title="@string/settings"
         android:id="@+id/settings"
         app:showAsAction="ifRoom"
         android:icon="@drawable/settings_icon"/>

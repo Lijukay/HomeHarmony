@@ -14,7 +14,7 @@
             android:id="@+id/title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="New member"
+            android:text="@string/new_member"
             android:textAppearance="?attr/textAppearanceTitleLarge"
             android:textColor="?android:attr/textColorSecondary" />
 
@@ -23,7 +23,7 @@
             android:layout_marginTop="24dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Prename"
+            android:hint="@string/prename"
             android:id="@+id/memberPrename">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -36,7 +36,7 @@
             android:layout_marginTop="8dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Nickname"
+            android:hint="@string/nickname"
             android:id="@+id/memberNickname">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -49,7 +49,7 @@
             android:layout_marginTop="24dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Add"
+            android:text="@string/add"
             android:id="@+id/add_member_button"/>
     </LinearLayout>
 

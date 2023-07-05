@@ -155,9 +155,9 @@ public class SubtaskActivity extends AppCompatActivity implements OnLongClickInt
             };
 
             new MaterialAlertDialogBuilder(this, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered)
-                    .setTitle("Share files")
-                    .setMultiChoiceItems(new String[]{"Exercises", "Members", "Rules"}, selected, (dialog, which, isChecked) -> selected[which] = isChecked)
-                    .setPositiveButton("Share", (dialog, which) -> sendFiles(extensions, selected))
+                    .setTitle(getString(R.string.share_files))
+                    .setMultiChoiceItems(new String[]{getString(R.string.tasks), getString(R.string.members), getString(R.string.rules)}, selected, (dialog, which, isChecked) -> selected[which] = isChecked)
+                    .setPositiveButton(getString(R.string.share), (dialog, which) -> sendFiles(extensions, selected))
                     .show();
             return true;
         } else if (item.getItemId() == R.id.settings) {
@@ -183,7 +183,7 @@ public class SubtaskActivity extends AppCompatActivity implements OnLongClickInt
             String subtaskInfoS = TextUtils.isEmpty(Objects.requireNonNull(subtaskInfo.getEditText()).getText().toString().trim()) ? null : Objects.requireNonNull(subtaskInfo.getEditText()).getText().toString().trim();
 
             if (TextUtils.isEmpty(subtaskTitle)) {
-                Toast.makeText(SubtaskActivity.this, "Subtask needs a title", Toast.LENGTH_SHORT).show();
+                Toast.makeText(SubtaskActivity.this, getString(R.string.title_required), Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -246,7 +246,7 @@ public class SubtaskActivity extends AppCompatActivity implements OnLongClickInt
                     grantUriPermission(ri.activityInfo.packageName, files.get(i), Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 }
             }
-            startActivity(Intent.createChooser(share, "Share files"));
+            startActivity(Intent.createChooser(share, getString(R.string.share_files)));
         }
     }
 
@@ -277,7 +277,7 @@ public class SubtaskActivity extends AppCompatActivity implements OnLongClickInt
             String subtaskInfoS = TextUtils.isEmpty(Objects.requireNonNull(subtaskInfo.getEditText()).getText().toString().trim()) ? null : Objects.requireNonNull(subtaskInfo.getEditText()).getText().toString().trim();
 
             if (TextUtils.isEmpty(subtaskTitle)) {
-                Toast.makeText(SubtaskActivity.this, "Subtask needs a title", Toast.LENGTH_SHORT).show();
+                Toast.makeText(SubtaskActivity.this, getString(R.string.title_required), Toast.LENGTH_SHORT).show();
                 return;
             }
 

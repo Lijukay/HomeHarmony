@@ -55,7 +55,6 @@ public class MembersFragment extends Fragment implements OnClickInterface, OnLon
 
     private MembersAdapter membersAdapter;
     private ArrayList<Member> members;
-    private SharedPreferences membersPreference;
     private String destination;
 
     public MembersFragment() {
@@ -75,8 +74,6 @@ public class MembersFragment extends Fragment implements OnClickInterface, OnLon
 
         destination = requireContext().getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS).toString() + "/" + getString(R.string.app_name) + ".hhm";
 
-        membersPreference = requireContext().getSharedPreferences("Members", 0);
-
         RecyclerView rv = v.findViewById(R.id.memberExercises);
         rv.setLayoutManager(new LinearLayoutManager(requireContext().getApplicationContext()));
 
@@ -89,14 +86,7 @@ public class MembersFragment extends Fragment implements OnClickInterface, OnLon
                 throw new RuntimeException(e);
             }
         }
-        if (membersPreference.getBoolean("firstStart", true)){
-            new MaterialAlertDialogBuilder(requireContext(), com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered)
-                    .setTitle("About Members Overview")
-                    .setMessage("This is an overview, that is made for a quicker view on member's tasks.")
-                    .setPositiveButton("Okay", (dialog, which) -> dialog.cancel())
-                    .setOnCancelListener(dialog -> membersPreference.edit().putBoolean("firstStart", false).apply())
-                    .show();
-        }
+
 
         membersAdapter = new MembersAdapter(requireContext(), members, this, this);
         rv.setAdapter(membersAdapter);
@@ -119,10 +109,10 @@ public class MembersFragment extends Fragment implements OnClickInterface, OnLon
                     addMembersToFile();
                     dialog.dismiss();
                 } else {
-                    Toast.makeText(requireContext(), "Nickname already exists", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), getString(R.string.nickname_exists), Toast.LENGTH_SHORT).show();
                 }
             } else {
-                Toast.makeText(requireContext(), "Name and nickname required", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), getString(R.string.name_and_nickname_required), Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -154,7 +144,6 @@ public class MembersFragment extends Fragment implements OnClickInterface, OnLon
         Gson gson = new Gson();
         if (members.size() != 0) {
             String jsonString = gson.toJson(members);
-            //saveJSONAsFile(jsonString);
             ((MainActivity) requireActivity()).saveJsonAsFile(jsonString, destination);
         }
     }
@@ -198,7 +187,7 @@ public class MembersFragment extends Fragment implements OnClickInterface, OnLon
                     membersAdapter.updateData(members);
                     addMembersToFile();
                 } else {
-                    Toast.makeText(requireContext(), "Unable to read file", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), getString(R.string.invalid_file), Toast.LENGTH_SHORT).show();
                 }
 
                 if (inputStream != null) {
@@ -207,20 +196,9 @@ public class MembersFragment extends Fragment implements OnClickInterface, OnLon
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        } else if (result != null) {
-            if (((MainActivity) requireActivity()).getFileExtension(result.toString()).equals("hhr") || ((MainActivity) requireActivity()).getFileExtension(result.toString()).equals("hhe")) {
-                new MaterialAlertDialogBuilder(requireContext(), com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered)
-                        .setTitle("Wrong file extension")
-                        .setMessage("This is a Home Harmony file extension but you should choose a file that has the extension hhm.")
-                        .setPositiveButton("Okay", (dialog, which) -> dialog.cancel())
-                        .show();
-            }  else if (!result.toString().equals("hhr") && !result.toString().equals("hhe") && !result.toString().endsWith("hhm")) {
-                new MaterialAlertDialogBuilder(requireContext(), com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered)
-                        .setTitle("File extension not supported")
-                        .setMessage("This is not a file extension that is supported by the app. Please choose a file which extension is hhm")
-                        .setPositiveButton("Okay", (dialog, which) -> dialog.cancel())
-                        .show();
-            }
+        } else {
+            Toast.makeText(requireContext(), getString(R.string.invalid_file), Toast.LENGTH_SHORT).show();
+
         }
     });
 
@@ -235,10 +213,10 @@ public class MembersFragment extends Fragment implements OnClickInterface, OnLon
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.addItem) {
             new MaterialAlertDialogBuilder(requireContext(), com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered)
-                    .setTitle("Members")
-                    .setMessage("Create a file using \"New member\" or import a file using \"From file\". Please be aware that as for now, if you import a file, your current members will get deleted.")
-                    .setPositiveButton("New member", (dialog, which) -> addNewMember())
-                    .setNeutralButton("From file", (dialog, which) -> mGetContent.launch("application/octet-stream"))
+                    .setTitle(getString(R.string.members))
+                    .setMessage(getString(R.string.create_member_dialog_message))
+                    .setPositiveButton(getString(R.string.new_member), (dialog, which) -> addNewMember())
+                    .setNeutralButton(getString(R.string.from_file), (dialog, which) -> mGetContent.launch("application/octet-stream"))
                     .show();
             return true;
         }
@@ -286,7 +264,7 @@ public class MembersFragment extends Fragment implements OnClickInterface, OnLon
             String newName = Objects.requireNonNull(membersNameTIL.getEditText()).getText().toString().trim();
 
             if (TextUtils.isEmpty(newName)) {
-                Toast.makeText(requireContext(), "Name is required", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), getString(R.string.name_required), Toast.LENGTH_SHORT).show();
                 return;
             }
 

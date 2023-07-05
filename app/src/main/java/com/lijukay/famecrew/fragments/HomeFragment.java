@@ -45,25 +45,24 @@ public class HomeFragment extends Fragment {
         TextView dailyProgressTextView = v.findViewById(R.id.dailyProgressMessage);
 
         if(!user.equals("user")){
-            dailyProgressTextView.setVisibility(View.GONE);
-            getFileContent(new File(destinationExercise));
-            if (exercises.size() != 0) {
+            if (new File(destinationExercise).exists() && exercises.size() != 0) {
+                dailyProgressTextView.setVisibility(View.GONE);
+                getFileContent(new File(destinationExercise));
+
                 progress.setVisibility(View.VISIBLE);
                 dailyProgressTextView.setVisibility(View.VISIBLE);
-                progress.setMax(exercises.size()); //TODO: GET EXERCISES COUNT (FOR SPECIFIC USER) AND SET MAX TO IT
-                progress.setProgress(1); // TODO: 04.06.2023 GET HOW MANY EXERCISES ARE DONE AND SET PROGRESS TO IT
-                //You have finished %1$d of %2$d of your exercises
-                //dailyProgressTextView.setText(getString(R.string.progress, progress.getProgress(), progress.getMax()));
-                dailyProgressTextView.setText("You have finished " + progress.getProgress() + " of " + progress.getMax() + "of your exercises.");
-
+                progress.setMax(exercises.size());
+                progress.setProgress(1);
+                dailyProgressTextView.setText(getString(R.string.count_of_done_tasks, progress.getProgress(), progress.getMax()));
             } else {
                 progress.setVisibility(View.GONE);
                 dailyProgressTextView.setVisibility(View.VISIBLE);
-                dailyProgressTextView.setText("This can't be used as it seems like there are no tasks.");
+                dailyProgressTextView.setText(getString(R.string.cannot_use_feature_tasks));
             }
         }else {
             progress.setVisibility(View.GONE);
             dailyProgressTextView.setVisibility(View.VISIBLE);
+            dailyProgressTextView.setText(getString(R.string.cannot_use_feature_user));
         }
 
         return v;

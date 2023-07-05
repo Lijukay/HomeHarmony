@@ -52,7 +52,7 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.ViewHo
         holder.exerciseNameTextView.setText(exerciseName);
         if (member != null) {
             holder.exerciseMemberTextView.setVisibility(View.VISIBLE);
-            holder.exerciseMemberTextView.setText(member.getPrename() + " (" + member.getNickname() + ")"); // TODO: 02.07.2023 Add to String.xml
+            holder.exerciseMemberTextView.setText(member.getPrename() + " (" + member.getNickname() + ")");
         } else {
             holder.exerciseMemberTextView.setVisibility(View.GONE);
         }

@@ -82,12 +82,12 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigationViewRulesItem = mainActivityBottomNavigationViewMenu.findItem(R.id.rulesItem);
 
         getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, new HomeFragment()).commit();
-        mainActivityToolbar.setTitle("Home"); // TODO: 02.07.2023 Add Home to Strings.xml
+        mainActivityToolbar.setTitle(getString(R.string.home));
 
         mainActivityBottomNavigationView.setOnItemSelectedListener(item -> {
             if (item.getItemId() == R.id.homeItem) {
                 getSupportFragmentManager().beginTransaction().setCustomAnimations(rikka.core.R.anim.fade_in, rikka.core.R.anim.fade_out).replace(R.id.fragmentContainer, new HomeFragment()).commit();
-                mainActivityToolbar.setTitle("Home"); // TODO: 02.07.2023 Add Home to Strings.xml
+                mainActivityToolbar.setTitle(getString(R.string.home));
 
                 bottomNavigationViewHomeItem.setIcon(AppCompatResources.getDrawable(MainActivity.this, R.drawable.home_filled));
                 bottomNavigationViewMembersItem.setIcon(AppCompatResources.getDrawable(MainActivity.this, R.drawable.member_icon));
@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             } else if (item.getItemId() == R.id.memberItem) {
                 getSupportFragmentManager().beginTransaction().setCustomAnimations(rikka.core.R.anim.fade_in, rikka.core.R.anim.fade_out).replace(R.id.fragmentContainer, new MembersFragment()).commit();
-                mainActivityToolbar.setTitle("Members"); // TODO: 02.07.2023 Add Members to Strings.xml
+                mainActivityToolbar.setTitle(getString(R.string.members));
 
                 bottomNavigationViewHomeItem.setIcon(AppCompatResources.getDrawable(MainActivity.this, R.drawable.home_icon));
                 bottomNavigationViewMembersItem.setIcon(AppCompatResources.getDrawable(MainActivity.this, R.drawable.members_icon_filled));
@@ -107,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             } else if (item.getItemId() == R.id.taskItem) {
                 getSupportFragmentManager().beginTransaction().setCustomAnimations(rikka.core.R.anim.fade_in, rikka.core.R.anim.fade_out).replace(R.id.fragmentContainer, new ExercisesFragment()).commit();
-                mainActivityToolbar.setTitle("Exercises"); // TODO: 02.07.2023 Add Exercises to Strings.xml and rename it to Tasks
+                mainActivityToolbar.setTitle(getString(R.string.tasks));
 
                 bottomNavigationViewHomeItem.setIcon(AppCompatResources.getDrawable(MainActivity.this, R.drawable.home_icon));
                 bottomNavigationViewMembersItem.setIcon(AppCompatResources.getDrawable(MainActivity.this, R.drawable.member_icon));
@@ -117,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             } else if (item.getItemId() == R.id.rulesItem) {
                 getSupportFragmentManager().beginTransaction().setCustomAnimations(rikka.core.R.anim.fade_in, rikka.core.R.anim.fade_out).replace(R.id.fragmentContainer, new RulesFragment()).commit();
-                mainActivityToolbar.setTitle("Rules"); // TODO: 02.07.2023 Add Rules to Strings.xml
+                mainActivityToolbar.setTitle(getString(R.string.rules));
 
                 bottomNavigationViewHomeItem.setIcon(AppCompatResources.getDrawable(MainActivity.this, R.drawable.home_icon));
                 bottomNavigationViewMembersItem.setIcon(AppCompatResources.getDrawable(MainActivity.this, R.drawable.member_icon));
@@ -213,7 +213,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                     break;
                 default:
-                    Toast.makeText(this, "Something went wrong. Correct file?", Toast.LENGTH_SHORT).show(); // TODO: 02.07.2023 Add to Strings.xml
+                    Toast.makeText(this, getString(R.string.invalid_file), Toast.LENGTH_SHORT).show();
                     break;
             }
         }
@@ -245,9 +245,9 @@ public class MainActivity extends AppCompatActivity {
             };
 
             new MaterialAlertDialogBuilder(this, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered)
-                    .setTitle("Share files") // TODO: 02.07.2023 Add to Strings.xml
-                    .setMultiChoiceItems(new String[]{"Exercises", "Members", "Rules"}, selected, (dialog, which, isChecked) -> selected[which] = isChecked)
-                    .setPositiveButton("Share", (dialog, which) -> sendFiles(extensions, selected)) // TODO: 02.07.2023 Add to Strings.xml
+                    .setTitle(getString(R.string.share_files))
+                    .setMultiChoiceItems(new String[]{getString(R.string.tasks), getString(R.string.members), getString(R.string.rules)}, selected, (dialog, which, isChecked) -> selected[which] = isChecked)
+                    .setPositiveButton(getString(R.string.share), (dialog, which) -> sendFiles(extensions, selected))
                     .show();
             return true;
         } else if (item.getItemId() == R.id.settings) {
@@ -280,7 +280,7 @@ public class MainActivity extends AppCompatActivity {
                     grantUriPermission(ri.activityInfo.packageName, files.get(i), Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 }
             }
-            startActivity(Intent.createChooser(share, "Share files")); // TODO: 02.07.2023 Add to Strings.xml
+            startActivity(Intent.createChooser(share, getString(R.string.share_files)));
         }
     }
 
@@ -318,7 +318,7 @@ public class MainActivity extends AppCompatActivity {
         bw.write(jsonString);
         bw.close();
 
-        Toast.makeText(this, "Tasks were updated!", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, getString(R.string.updated_tasks), Toast.LENGTH_SHORT).show();
     }
 
     private void saveFileContentR() throws IOException {
@@ -333,7 +333,7 @@ public class MainActivity extends AppCompatActivity {
         bw.write(jsonString);
         bw.close();
 
-        Toast.makeText(this, "Rules were updated!", Toast.LENGTH_SHORT).show(); // TODO: 02.07.2023 Add to Strings.xml
+        Toast.makeText(this, getString(R.string.updated_rules), Toast.LENGTH_SHORT).show();
     }
 
     private void saveFileContentM() throws IOException {
@@ -348,7 +348,7 @@ public class MainActivity extends AppCompatActivity {
         bw.write(jsonString);
         bw.close();
 
-        Toast.makeText(this, "Members were updated!", Toast.LENGTH_SHORT).show(); // TODO: 02.07.2023 Add to Strings.xml
+        Toast.makeText(this, getString(R.string.updated_members), Toast.LENGTH_SHORT).show();
     }
 
     public String getFileName(Uri fileUri) {

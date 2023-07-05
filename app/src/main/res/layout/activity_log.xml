@@ -16,7 +16,7 @@
             android:id="@+id/titleBar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:title="App error" />
+            app:title="@string/app_error_title" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -45,19 +45,14 @@
 
                     <TextView
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Log Message - What went wrong"
-                        android:textAppearance="?attr/textAppearanceTitleMedium"
-                        android:textColor="?android:attr/textColorSecondary"
+                        android:layout_height="wrap_content" android:text="@string/log_message_what_went_wrong" android:textAppearance="?attr/textAppearanceTitleMedium" android:textColor="?android:attr/textColorSecondary"
                         />
 
                     <TextView
                         android:layout_marginTop="8dp"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:id="@+id/error_text_non_detailed"
-                        android:textAppearance="?attr/textAppearanceBodyMedium"
-                        android:textColor="?android:attr/textColorSecondary"
+                        android:id="@+id/error_text_non_detailed" android:textAppearance="?attr/textAppearanceBodyMedium" android:textColor="?android:attr/textColorSecondary"
                         />
 
                 </LinearLayout>
@@ -78,19 +73,14 @@
 
                     <TextView
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Log Message - Detailed Message"
-                        android:textAppearance="?attr/textAppearanceTitleMedium"
-                        android:textColor="?android:attr/textColorSecondary"
+                        android:layout_height="wrap_content" android:text="@string/log_message_detailed_message" android:textAppearance="?attr/textAppearanceTitleMedium" android:textColor="?android:attr/textColorSecondary"
                         />
 
                     <TextView
                         android:layout_marginTop="8dp"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:id="@+id/error_text_detailed"
-                        android:textAppearance="?attr/textAppearanceBodyMedium"
-                        android:textColor="?android:attr/textColorSecondary"
+                        android:id="@+id/error_text_detailed" android:textAppearance="?attr/textAppearanceBodyMedium" android:textColor="?android:attr/textColorSecondary"
                         />
 
                 </LinearLayout>
@@ -113,7 +103,7 @@
             android:id="@+id/copy_logs_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Copy Logs"
+            android:text="@string/copy_logs"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -122,7 +112,7 @@
             android:id="@+id/send_logs_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Send logs"
+            android:text="@string/send_logs"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

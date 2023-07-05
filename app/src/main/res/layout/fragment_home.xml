@@ -27,7 +27,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Information to the app-version"
+                    android:text="@string/information_to_the_app_version"
                     android:textAppearance="?attr/textAppearanceTitleMedium"
                     android:textColor="?android:attr/textColorSecondary"
                     />
@@ -35,7 +35,7 @@
                     android:layout_marginTop="8dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="This app-version is not a full release. This is a beta version so it could be unstable and things can lead this app to crash. Report issues if possible. Thank you for testing this application!"
+                    android:text="@string/app_version_information"
                     android:textAppearance="?attr/textAppearanceBodyMedium"
                     android:textColor="?android:attr/textColorSecondary"
                     />
@@ -63,7 +63,7 @@
                         android:layout_height="wrap_content"
                         android:textAppearance="?attr/textAppearanceTitleMedium"
                         android:textColor="?android:attr/textColorSecondary"
-                        android:text="Tasks, you need to finish today"
+                        android:text="@string/tasks_you_need_to_finish_today"
                         />
                     <TextView
                         android:layout_marginTop="8dp"
@@ -71,7 +71,7 @@
                         android:layout_height="wrap_content"
                         android:textAppearance="?attr/textAppearanceBodyMedium"
                         android:textColor="?android:attr/textColorSecondary"
-                        android:text="Please select a user in Settings first, to use this feature."
+                        android:text="@string/select_user_info"
                         />
 
             </LinearLayout>
@@ -95,7 +95,7 @@
                     android:layout_height="wrap_content"
                     android:textAppearance="?attr/textAppearanceTitleMedium"
                     android:textColor="?android:attr/textColorSecondary"
-                    android:text="Your progress today"
+                    android:text="@string/your_progress_today"
                     />
                 <TextView
                     android:id="@+id/dailyProgressMessage"

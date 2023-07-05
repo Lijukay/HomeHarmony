@@ -13,7 +13,7 @@
             android:id="@+id/title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Update task"
+            android:text="@string/update_task"
             android:textAppearance="?attr/textAppearanceTitleLarge"
             android:textColor="?android:attr/textColorSecondary" />
 
@@ -22,7 +22,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:hint="Task">
+                android:hint="@string/task">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
@@ -35,13 +35,13 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:id="@+id/voluntaryCheck"
-                android:text="Label task as voluntary"/>
+                android:text="@string/label_task_as_voluntary"/>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/exerciseMembersNickname"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Nickname of member">
+                android:hint="@string/nickname_of_member">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
@@ -62,7 +62,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
-                android:text="Please enter the nickname of the member, who finished this task."
+                android:text="@string/information_nickname_finished"
                 android:textAppearance="?attr/textAppearanceBodyMedium"
                 android:textColor="?android:attr/textColorSecondary"/>
 
@@ -71,7 +71,7 @@
                 android:layout_margin="8dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Nickname of member"
+                android:hint="@string/nickname_of_member"
                 android:visibility="gone">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -91,7 +91,7 @@
                     android:layout_margin="8dp"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="Delete"
+                    android:text="@string/delete"
                     android:backgroundTint="?attr/colorError"
                     android:id="@+id/buttonDelete"/>
 
@@ -100,7 +100,7 @@
                     android:layout_margin="8dp"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="Update"
+                    android:text="@string/update"
                     android:id="@+id/buttonUpdate"/>
             </GridLayout>
 
