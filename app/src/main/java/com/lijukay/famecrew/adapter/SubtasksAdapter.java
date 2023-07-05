@@ -19,7 +19,7 @@ import java.util.ArrayList;
 
 public class SubtasksAdapter extends RecyclerView.Adapter<SubtasksAdapter.ViewHolder> {
     private final Context context;
-    private ArrayList<Subtask> subtasks;
+    private final ArrayList<Subtask> subtasks;
     private final OnLongClickInterface onLongClickInterface;
 
     public SubtasksAdapter(Context context, ArrayList<Subtask> subtasks, OnLongClickInterface onLongClickInterface) {
@@ -57,12 +57,6 @@ public class SubtasksAdapter extends RecyclerView.Adapter<SubtasksAdapter.ViewHo
     @Override
     public int getItemCount() {
         return subtasks.size();
-    }
-
-    @SuppressLint("NotifyDataSetChanged")
-    public void updateData(ArrayList<Subtask> subtasks) {
-        this.subtasks = subtasks;
-        notifyDataSetChanged();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
