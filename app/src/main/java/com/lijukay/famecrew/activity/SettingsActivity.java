@@ -263,7 +263,7 @@ public class SettingsActivity extends AppCompatActivity {
 
                     if (finalVersionsCodeBeta > versionC && settingsPreferences.getBoolean("wantsBeta", false)) {
                         new MaterialAlertDialogBuilder(requireContext(), com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered)
-                                .setTitle(getString(R.string.updater_title_beta, BuildConfig.VERSION_NAME, finalVersionsNameBeta1))
+                                .setTitle(getString(R.string.updater_title, BuildConfig.VERSION_NAME, finalVersionsNameBeta1))
                                 .setMessage(finalChangelogBeta1)
                                 .setPositiveButton(getString(R.string.update), (dialog, which) -> InstallUpdate(requireContext(), finalApkUrlBeta1, finalVersionsNameBeta1))
                                 .setNeutralButton(getString(R.string.later), (dialog, which) -> dialog.cancel())
