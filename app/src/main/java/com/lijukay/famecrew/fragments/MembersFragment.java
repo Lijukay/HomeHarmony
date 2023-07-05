@@ -2,7 +2,6 @@ package com.lijukay.famecrew.fragments;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Environment;
 import android.text.TextUtils;

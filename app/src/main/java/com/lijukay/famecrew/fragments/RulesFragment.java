@@ -1,7 +1,6 @@
 package com.lijukay.famecrew.fragments;
 
 import android.annotation.SuppressLint;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Environment;
 import android.text.TextUtils;
@@ -11,7 +10,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -25,7 +23,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.materialswitch.MaterialSwitch;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -33,8 +30,6 @@ import com.lijukay.famecrew.R;
 import com.lijukay.famecrew.activity.MainActivity;
 import com.lijukay.famecrew.adapter.RulesAdapter;
 import com.lijukay.famecrew.interfaces.OnLongClickInterface;
-import com.lijukay.famecrew.objects.Exercise;
-import com.lijukay.famecrew.objects.Member;
 import com.lijukay.famecrew.objects.Rule;
 
 import java.io.BufferedReader;
@@ -49,7 +44,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Locale;
 import java.util.Objects;
 
 

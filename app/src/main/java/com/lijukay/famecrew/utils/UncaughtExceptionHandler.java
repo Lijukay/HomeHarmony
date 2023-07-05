@@ -1,10 +1,8 @@
 package com.lijukay.famecrew.utils;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -16,7 +14,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.Arrays;
 
 public class UncaughtExceptionHandler implements Thread.UncaughtExceptionHandler {
 

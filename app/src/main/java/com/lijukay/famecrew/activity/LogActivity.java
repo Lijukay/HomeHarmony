@@ -13,7 +13,6 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.FileProvider;
-import androidx.core.view.WindowCompat;
 
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.elevation.SurfaceColors;
