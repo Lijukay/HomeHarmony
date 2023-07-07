@@ -8,7 +8,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -363,31 +362,5 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         return name;
-    }
-
-    /*private String getFilePath(Uri uri) {
-        String path = null;
-        String[] projection = {MediaStore.MediaColumns.DATA};
-        ContentResolver contentResolver = getContentResolver();
-        try (Cursor cursor = contentResolver.query(uri, projection, null, null, null)) {
-            if (cursor != null && cursor.moveToFirst()) {
-                int columnIndex = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
-                path = cursor.getString(columnIndex);
-            }
-        }
-        return path;
-    }*/
-
-    private String getFilePath(Uri uri) {
-        String path = null;
-        String[] projection = {MediaStore.MediaColumns.DATA};
-        ContentResolver contentResolver = getContentResolver();
-        try (Cursor cursor = contentResolver.query(uri, projection, null, null, null)) {
-            if (cursor != null && cursor.moveToFirst()) {
-                int columnIndex = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
-                path = cursor.getString(columnIndex);
-            }
-        }
-        return path;
     }
 }
