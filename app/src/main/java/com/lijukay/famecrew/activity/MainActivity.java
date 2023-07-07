@@ -137,7 +137,8 @@ public class MainActivity extends AppCompatActivity {
     private void getContentOfImportedFile(Uri fileUri) {
         String fileName = getFileName(fileUri);
         String fileExtension = null;
-        String filePath = getFilePath(fileUri);
+        //String filePath = getFilePath(fileUri);
+        String filePath = fileUri.getPath();
 
         if (fileName != null) {
             fileExtension = getFileExtension(fileName);
@@ -363,6 +364,19 @@ public class MainActivity extends AppCompatActivity {
         }
         return name;
     }
+
+    /*private String getFilePath(Uri uri) {
+        String path = null;
+        String[] projection = {MediaStore.MediaColumns.DATA};
+        ContentResolver contentResolver = getContentResolver();
+        try (Cursor cursor = contentResolver.query(uri, projection, null, null, null)) {
+            if (cursor != null && cursor.moveToFirst()) {
+                int columnIndex = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
+                path = cursor.getString(columnIndex);
+            }
+        }
+        return path;
+    }*/
 
     private String getFilePath(Uri uri) {
         String path = null;
